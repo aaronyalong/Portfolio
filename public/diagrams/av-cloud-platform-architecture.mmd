@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph hpc [SJSU HPC]
+        direction LR
+        CARLA[CARLA simulator] --> EDGE[Edge agent<br/>SQLite buffer]
+    end
+
+    subgraph aws [AWS]
+        direction TB
+        IOT[IoT Core<br/>MQTT] --> SQS[SQS] --> W[Workers<br/>validate, detect hazards,<br/>raise alerts]
+        S3[(S3<br/>media)]
+        PG[(PostgreSQL<br/>row-level security<br/>per tenant)]
+        MG[(DocumentDB / MongoDB<br/>telemetry, events)]
+        API[FastAPI<br/>health checks so far]
+    end
+
+    WEB[React dashboard<br/>Cognito sign-in]
+
+    EDGE -- telemetry --> IOT
+    EDGE -- "media<br/>(presigned URL)" --> S3
+    W --> PG
+    W --> MG
+    W --> S3
+    WEB -- HTTPS --> API
+    API --> PG
+    API --> MG
+
+    subgraph legend [Legend]
+        direction LR
+        B1[Built, runs locally]
+        P1[Planned]
+    end
+
+    classDef built stroke-width:3px
+    classDef planned stroke-dasharray:6 4
+    class PG,MG,API,B1 built
+    class CARLA,EDGE,IOT,SQS,W,S3,WEB,P1 planned
