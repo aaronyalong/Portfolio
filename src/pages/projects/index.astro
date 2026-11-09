@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
 ---
 
 <BaseLayout title="Projects" description="Project case studies by Aaron Yalong.">
@@ -7,7 +11,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 	<p class="lede">
 		Case studies: the problem, the architecture, key decisions, results and limitations.
 	</p>
-	<p class="todo">TODO: project list, generated from the projects content collection (Phase 3)</p>
+	<ul class="cards">
+		{
+			projects.map((project) => (
+				<li>
+					<ProjectCard project={project} as="h2" />
+				</li>
+			))
+		}
+	</ul>
 </BaseLayout>
 
 <style>
@@ -15,5 +27,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 		margin-block: var(--space-3) var(--space-8);
 		font-size: var(--text-lg);
 		color: var(--color-text-muted);
+	}
+
+	.cards {
+		display: grid;
+		gap: var(--space-4);
+		padding: 0;
+		list-style: none;
 	}
 </style>

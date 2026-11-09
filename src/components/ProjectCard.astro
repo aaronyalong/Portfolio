@@ -1,0 +1,80 @@
+---
+import type { Project } from '../lib/content';
+
+interface Props {
+	project: Project;
+	/** Heading level, so the card fits the page outline. */
+	as?: 'h2' | 'h3';
+}
+
+const { project, as: Heading = 'h3' } = Astro.props;
+const { title, summary, stack, repo, context, role, teamSize, status } = project.data;
+const meta = [context, status === 'in-progress' ? 'In progress' : undefined].filter(Boolean);
+---
+
+<article class="card">
+	<Heading class="title">{title}</Heading>
+	{meta.length > 0 && <p class="meta">{meta.join(' · ')}</p>}
+	<p>{summary}</p>
+	{
+		role && (
+			<p class="role">
+				<strong>Role:</strong> {role}
+				{teamSize && <> (team of {teamSize})</>}
+			</p>
+		)
+	}
+	{
+		stack.length > 0 && (
+			<ul class="stack" aria-label="Tech stack">
+				{stack.map((tech) => <li>{tech}</li>)}
+			</ul>
+		)
+	}
+	{repo && <p class="links"><a href={repo}>Repository</a></p>}
+</article>
+
+<style>
+	.card {
+		display: grid;
+		gap: var(--space-2);
+		padding: var(--space-4) var(--space-6);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+	}
+
+	.title {
+		font-size: var(--text-lg);
+	}
+
+	.meta {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.role {
+		font-size: var(--text-sm);
+	}
+
+	.stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		padding: 0;
+		list-style: none;
+	}
+
+	.stack li {
+		padding: 0 var(--space-2);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		color: var(--color-text-muted);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+	}
+
+	.links {
+		font-size: var(--text-sm);
+	}
+</style>

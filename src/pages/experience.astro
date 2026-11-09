@@ -1,5 +1,15 @@
 ---
+import { render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatRange, getExperience, isTodo } from '../lib/content';
+
+const jobs = await Promise.all(
+	(await getExperience()).map(async (job) => ({
+		job,
+		range: formatRange(job.data.start, job.data.end),
+		Content: (await render(job)).Content,
+	})),
+);
 ---
 
 <BaseLayout title="Experience" description="Work experience and education of Aaron Yalong.">
@@ -7,7 +17,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 	<section aria-labelledby="experience-heading">
 		<h2 id="experience-heading">Experience</h2>
-		<p class="todo">TODO: roles, generated from the experience content collection (Phase 3/5)</p>
+		<ol class="jobs">
+			{
+				jobs.map(({ job, range, Content }) => (
+					<li class="job">
+						<h3>
+							<span class:list={{ todo: isTodo(job.data.role) }}>{job.data.role}</span>{' '}
+							<span class="company">· {job.data.company}</span>
+						</h3>
+						<p class="dates">
+							{range.start ?? <span class="todo">TODO: start</span>}
+							{' – '}
+							{range.end ?? <span class="todo">TODO: end</span>}
+						</p>
+						<div class="body">
+							<Content />
+						</div>
+						{job.data.stack.length > 0 && (
+							<p class="stack">{job.data.stack.join(' · ')}</p>
+						)}
+					</li>
+				))
+			}
+		</ol>
 	</section>
 
 	<section aria-labelledby="education-heading">
@@ -27,5 +59,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 	h2 {
 		margin-bottom: var(--space-4);
+	}
+
+	.jobs {
+		display: grid;
+		gap: var(--space-8);
+		padding: 0;
+		list-style: none;
+	}
+
+	.job h3 {
+		font-size: var(--text-lg);
+	}
+
+	.company {
+		font-weight: 400;
+		color: var(--color-text-muted);
+	}
+
+	.dates,
+	.stack {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.stack {
+		font-family: var(--font-mono);
+	}
+
+	.body {
+		margin-block: var(--space-2);
 	}
 </style>
