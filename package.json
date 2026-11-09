@@ -10,7 +10,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "diagrams": "node scripts/diagrams.mjs"
+    "diagrams": "node scripts/diagrams.mjs",
+    "check:todos": "node scripts/check-todos.mjs",
+    "build:deploy": "astro build && node scripts/check-todos.mjs"
   },
   "dependencies": {
     "astro": "^7.4.7"
