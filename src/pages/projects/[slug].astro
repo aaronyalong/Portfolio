@@ -1,0 +1,57 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectMeta from '../../components/ProjectMeta.astro';
+import { getProjects, type Project } from '../../lib/content';
+
+export async function getStaticPaths() {
+	const projects = await getProjects();
+	return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+interface Props {
+	project: Project;
+}
+
+const { project } = Astro.props;
+const { title, summary, repo } = project.data;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={title} description={summary}>
+	<article>
+		<header class="head">
+			<p class="back"><a href="/projects/">← All projects</a></p>
+			<h1>{title}</h1>
+			<p class="summary">{summary}</p>
+			<ProjectMeta project={project} />
+			{repo && <p class="links"><a href={repo}>Repository</a></p>}
+		</header>
+		<div class="prose">
+			<Content />
+		</div>
+	</article>
+</BaseLayout>
+
+<style>
+	.head {
+		display: grid;
+		gap: var(--space-2);
+		padding-bottom: var(--space-8);
+		margin-bottom: var(--space-8);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.back {
+		font-size: var(--text-sm);
+	}
+
+	.summary {
+		font-size: var(--text-lg);
+		color: var(--color-text-muted);
+	}
+
+	.links {
+		font-size: var(--text-sm);
+	}
+</style>

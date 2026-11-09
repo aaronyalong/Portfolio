@@ -130,6 +130,85 @@ pre {
 	font-size: 0.9em;
 }
 
+/* ---------- Prose (rendered Markdown) ---------- */
+.prose > * + * {
+	margin-top: var(--space-4);
+}
+
+.prose h2 {
+	margin-top: var(--space-12);
+	font-size: var(--text-xl);
+}
+
+.prose h3 {
+	margin-top: var(--space-8);
+	font-size: var(--text-lg);
+}
+
+.prose ul,
+.prose ol {
+	padding-left: var(--space-6);
+}
+
+.prose li + li {
+	margin-top: var(--space-2);
+}
+
+.prose blockquote {
+	padding-left: var(--space-4);
+	border-left: 3px solid var(--color-border);
+	color: var(--color-text-muted);
+}
+
+.prose :not(pre) > code {
+	padding: 0.1em 0.3em;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+}
+
+.prose pre {
+	padding: var(--space-4);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	overflow-x: auto;
+	line-height: 1.5;
+}
+
+/* Wide tables scroll inside themselves rather than the page. */
+.prose table {
+	display: block;
+	max-width: 100%;
+	overflow-x: auto;
+	border-collapse: collapse;
+	font-size: var(--text-sm);
+}
+
+.prose th,
+.prose td {
+	padding: var(--space-2) var(--space-3);
+	border-bottom: 1px solid var(--color-border);
+	text-align: left;
+	vertical-align: top;
+}
+
+.prose th {
+	font-weight: 650;
+	white-space: nowrap;
+}
+
+/* Shiki dual themes: light by default, dark tokens under dark mode. */
+@media (prefers-color-scheme: dark) {
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+		font-style: var(--shiki-dark-font-style) !important;
+		font-weight: var(--shiki-dark-font-weight) !important;
+		text-decoration: var(--shiki-dark-text-decoration) !important;
+	}
+}
+
 /* ---------- Utilities ---------- */
 .container {
 	width: 100%;

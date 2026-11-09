@@ -1,0 +1,55 @@
+---
+import type { Project } from '../lib/content';
+
+interface Props {
+	project: Project;
+}
+
+const { stack, context, role, teamSize, status } = Astro.props.project.data;
+const meta = [context, status === 'in-progress' ? 'In progress' : undefined].filter(Boolean);
+---
+
+{meta.length > 0 && <p class="meta">{meta.join(' · ')}</p>}
+{
+	role && (
+		<p class="role">
+			<strong>Role:</strong> {role}
+			{teamSize && <> (team of {teamSize})</>}
+		</p>
+	)
+}
+{
+	stack.length > 0 && (
+		<ul class="stack" aria-label="Tech stack">
+			{stack.map((tech) => <li>{tech}</li>)}
+		</ul>
+	)
+}
+
+<style>
+	.meta {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.role {
+		font-size: var(--text-sm);
+	}
+
+	.stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		padding: 0;
+		list-style: none;
+	}
+
+	.stack li {
+		padding: 0 var(--space-2);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		color: var(--color-text-muted);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+	}
+</style>
