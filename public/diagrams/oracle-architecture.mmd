@@ -1,0 +1,18 @@
+flowchart TB
+    subgraph index [Indexing]
+        direction LR
+        V[Obsidian vault] --> C[Parse and chunk<br/>by heading] --> E[Embed<br/>nomic-embed-text] --> DB[(Chroma)]
+    end
+
+    subgraph search [Search]
+        direction TB
+        S[Search query] --> H[Hybrid search<br/>vector + BM25, RRF] --> N[Ranked sections]
+    end
+
+    subgraph ask [Ask]
+        direction TB
+        Q[Question] --> R[Vector search<br/>k=5] --> L[Local LLM<br/>qwen2.5:7b via Ollama] --> G[Grounding check] --> A[Answer + cited sources]
+    end
+
+    index --> search
+    index --> ask

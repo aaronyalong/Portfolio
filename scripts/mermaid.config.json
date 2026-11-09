@@ -1,4 +1,5 @@
 {
 	"htmlLabels": false,
-	"flowchart": { "htmlLabels": false }
+	"markdownAutoWrap": false,
+	"flowchart": { "htmlLabels": false, "wrappingWidth": 400 }
 }
