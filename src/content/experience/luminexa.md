@@ -1,7 +1,8 @@
 ---
 company: Luminexa
-role: "TODO: job title"
-start: "2024" # TODO: month, and end date
+role: Junior Software Developer
+start: 2024-08
+end: 2024-12
 stack: [Spring Boot, React]
 ---
 

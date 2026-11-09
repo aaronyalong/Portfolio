@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getProjects } from '../lib/content';
+import { CONTACT } from '../lib/site';
 
 const FEATURED_COUNT = 3;
 const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
@@ -43,8 +44,10 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 		<h2 id="more-heading">More</h2>
 		<ul class="links">
 			<li><a href="/experience/">Experience &amp; education</a></li>
-			<li><a href="https://github.com/aaronyalong">GitHub</a></li>
-			<li class="todo">TODO: resume PDF, LinkedIn, email (Phase 5)</li>
+			<li><a href={CONTACT.github}>GitHub</a></li>
+			<li><a href={CONTACT.linkedin}>LinkedIn</a></li>
+			<li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+			<li class="todo">TODO: resume PDF</li>
 		</ul>
 	</section>
 </BaseLayout>

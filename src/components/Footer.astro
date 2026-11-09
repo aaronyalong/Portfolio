@@ -1,4 +1,6 @@
 ---
+import { CONTACT } from '../lib/site';
+
 const year = new Date().getFullYear();
 ---
 
@@ -6,11 +8,9 @@ const year = new Date().getFullYear();
 	<div class="container inner">
 		<p>© {year} Aaron Yalong</p>
 		<ul>
-			<li><a href="https://github.com/aaronyalong">GitHub</a></li>
-			<!-- TODO(Aaron): add LinkedIn profile URL -->
-			<li class="todo">TODO: LinkedIn</li>
-			<!-- TODO(Aaron): add public contact email -->
-			<li class="todo">TODO: Email</li>
+			<li><a href={CONTACT.github}>GitHub</a></li>
+			<li><a href={CONTACT.linkedin}>LinkedIn</a></li>
+			<li><a href={`mailto:${CONTACT.email}`}>Email</a></li>
 		</ul>
 	</div>
 </footer>

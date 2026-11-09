@@ -3,6 +3,8 @@ title: Oracle
 summary: Fully local cited Q&A over Obsidian notes.
 stack: [Python, Ollama, Chroma, FastAPI, TypeScript, MCP]
 repo: https://github.com/aaronyalong/oracle
+featured: true
+order: 1
 ---
 
 <p class="todo">TODO: screenshot or short GIF of the Obsidian panel (Ask and Search tabs)</p>
