@@ -15,6 +15,10 @@ const projects = defineCollection({
 		summary: z.string(),
 		stack: z.array(z.string()).default([]),
 		repo: z.url().optional(),
+		/** Where to play or try it, e.g. a hosted build of a game. */
+		play: z.url().optional(),
+		/** False for a short entry: a card on the projects index, but no case-study page. */
+		caseStudy: z.boolean().default(true),
 		/** e.g. "CMPE 259 project". */
 		context: z.string().optional(),
 		/** Aaron's role, for team projects. */

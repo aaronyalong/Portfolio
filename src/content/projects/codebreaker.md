@@ -1,7 +1,8 @@
 ---
 title: CodeBreaker
-summary: Mastermind game.
+summary: Mastermind in the browser, rewritten in TypeScript from a Python terminal game, with four difficulty levels and two-player pass-and-play.
+stack: [TypeScript, Vite, Vitest, GitHub Actions]
 repo: https://github.com/aaronyalong/CodeBreaker
+play: https://aaronyalong.github.io/CodeBreaker/
+caseStudy: false
 ---
-
-TODO: case study (Phase 5). TypeScript GUI rewrite planned, to be embedded as a playable demo (Phase 7).

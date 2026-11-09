@@ -5,7 +5,7 @@ import ProjectMeta from '../../components/ProjectMeta.astro';
 import { getProjects, type Project } from '../../lib/content';
 
 export async function getStaticPaths() {
-	const projects = await getProjects();
+	const projects = (await getProjects()).filter((project) => project.data.caseStudy);
 	return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
 }
 
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, summary, repo } = project.data;
+const { title, summary, repo, play } = project.data;
 const { Content } = await render(project);
 ---
 
@@ -25,7 +25,14 @@ const { Content } = await render(project);
 			<h1>{title}</h1>
 			<p class="summary">{summary}</p>
 			<ProjectMeta project={project} />
-			{repo && <p class="links"><a href={repo}>Repository</a></p>}
+			{
+				(repo || play) && (
+					<p class="links">
+						{repo && <a href={repo}>Repository</a>}
+						{play && <a href={play}>Play in browser</a>}
+					</p>
+				)
+			}
 		</header>
 		<div class="prose">
 			<Content />
@@ -52,6 +59,8 @@ const { Content } = await render(project);
 	}
 
 	.links {
+		display: flex;
+		gap: var(--space-4);
 		font-size: var(--text-sm);
 	}
 </style>

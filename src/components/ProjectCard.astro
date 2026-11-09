@@ -9,14 +9,23 @@ interface Props {
 }
 
 const { project, as: Heading = 'h3' } = Astro.props;
-const { title, summary, repo } = project.data;
+const { title, summary, repo, play, caseStudy } = project.data;
 ---
 
 <article class="card">
-	<Heading class="title"><a href={`/projects/${project.id}/`}>{title}</a></Heading>
+	<Heading class="title">
+		{caseStudy ? <a href={`/projects/${project.id}/`}>{title}</a> : title}
+	</Heading>
 	<p>{summary}</p>
 	<ProjectMeta project={project} />
-	{repo && <p class="links"><a href={repo}>Repository</a></p>}
+	{
+		(repo || play) && (
+			<p class="links">
+				{repo && <a href={repo}>Repository</a>}
+				{play && <a href={play}>Play in browser</a>}
+			</p>
+		)
+	}
 </article>
 
 <style>
@@ -34,6 +43,8 @@ const { title, summary, repo } = project.data;
 	}
 
 	.links {
+		display: flex;
+		gap: var(--space-4);
 		font-size: var(--text-sm);
 	}
 </style>
