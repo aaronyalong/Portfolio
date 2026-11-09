@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	/** Page-specific title; rendered as "<title> — Aaron Yalong". Omit on the home page. */
+	title?: string;
+	description?: string;
+}
+
+const SITE_NAME = 'Aaron Yalong';
+const DEFAULT_DESCRIPTION =
+	'Software engineer focused on LLM application engineering: agentic systems, RAG pipelines, MCP servers.';
+
+const { title, description = DEFAULT_DESCRIPTION } = Astro.props;
+const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<title>{fullTitle}</title>
+	</head>
+	<body>
+		<main id="main" class="container">
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style>
+	main {
+		padding-block: var(--space-12) var(--space-16);
+	}
+</style>
