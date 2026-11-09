@@ -138,6 +138,17 @@ pre {
 	padding-inline: var(--gutter);
 }
 
+/* Visible placeholder for content Aaron still needs to supply. */
+.todo {
+	display: inline-block;
+	padding: var(--space-1) var(--space-2);
+	border: 1px dashed var(--color-text-muted);
+	border-radius: var(--radius);
+	color: var(--color-text-muted);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+}
+
 .visually-hidden {
 	position: absolute;
 	width: 1px;

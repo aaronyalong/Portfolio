@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Experience" description="Work experience and education of Aaron Yalong.">
+	<h1>Experience &amp; education</h1>
+
+	<section aria-labelledby="experience-heading">
+		<h2 id="experience-heading">Experience</h2>
+		<p class="todo">TODO: roles, generated from the experience content collection (Phase 3/5)</p>
+	</section>
+
+	<section aria-labelledby="education-heading">
+		<h2 id="education-heading">Education</h2>
+		<p class="todo">TODO: degrees (Phase 5)</p>
+	</section>
+</BaseLayout>
+
+<style>
+	h1 {
+		margin-bottom: var(--space-8);
+	}
+
+	section + section {
+		margin-top: var(--space-12);
+	}
+
+	h2 {
+		margin-bottom: var(--space-4);
+	}
+</style>
