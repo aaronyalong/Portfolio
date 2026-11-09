@@ -1,0 +1,18 @@
+flowchart LR
+    subgraph ingest [1. Ingest]
+        direction TB
+        F[Course file<br/>PDF, PPTX or DOCX] --> B[Baseline parser<br/>text, tables, notes]
+        B -- "flagged pages:<br/>large images,<br/>vector drawings" --> V[Claude vision<br/>formulas, diagrams<br/>cached per page]
+        B --> D[Document<br/>citable pages → blocks]
+        V --> D
+    end
+
+    subgraph generate [2. Generate and check]
+        direction TB
+        T[Topic map<br/>one call per document] --> G[Generate questions<br/>schema-validated JSON,<br/>each cites a page<br/>+ exact quote]
+        G --> C[Code checks<br/>quote on cited page,<br/>4 distinct options,<br/>known topics,<br/>no duplicates]
+        C --> P[Passed]
+        C --> R[Rejected,<br/>with reasons]
+    end
+
+    ingest --> generate
