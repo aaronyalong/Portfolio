@@ -1,0 +1,89 @@
+---
+const links = [
+	{ href: '/', label: 'Home' },
+	{ href: '/projects/', label: 'Projects' },
+	{ href: '/experience/', label: 'Experience' },
+];
+
+// Normalise to a trailing slash so "/projects" and "/projects/" match.
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+	<div class="container inner">
+		<a class="site-name" href="/">Aaron Yalong</a>
+		<nav aria-label="Main">
+			<ul>
+				{
+					links.map(({ href, label }) => (
+						<li>
+							<a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+								{label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--space-2) var(--space-6);
+		padding-block: var(--space-4);
+	}
+
+	.site-name {
+		font-weight: 650;
+		color: var(--color-text);
+		text-decoration: none;
+	}
+
+	ul {
+		display: flex;
+		gap: var(--space-6);
+		padding: 0;
+		list-style: none;
+	}
+
+	nav a {
+		color: var(--color-text-muted);
+		text-decoration: none;
+	}
+
+	nav a:hover,
+	nav a[aria-current='page'] {
+		color: var(--color-text);
+	}
+
+	nav a[aria-current='page'] {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+	}
+
+	.skip-link {
+		position: absolute;
+		top: var(--space-2);
+		left: var(--space-2);
+		padding: var(--space-2) var(--space-4);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		transform: translateY(-200%);
+	}
+
+	.skip-link:focus {
+		transform: none;
+	}
+</style>
