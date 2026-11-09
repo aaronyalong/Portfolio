@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="This page doesn't exist.">
+	<h1>Page not found</h1>
+	<p class="lede">There's nothing at this address.</p>
+	<ul class="links">
+		<li><a href="/">Home</a></li>
+		<li><a href="/projects/">Projects</a></li>
+	</ul>
+</BaseLayout>
+
+<style>
+	.lede {
+		margin-block: var(--space-3) var(--space-6);
+		font-size: var(--text-lg);
+		color: var(--color-text-muted);
+	}
+
+	.links {
+		display: flex;
+		gap: var(--space-6);
+		padding: 0;
+		list-style: none;
+	}
+</style>

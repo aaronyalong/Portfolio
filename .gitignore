@@ -6,6 +6,8 @@ CLAUDE.md
 dist/
 # generated types
 .astro/
+# Wrangler (Cloudflare) local state
+.wrangler/
 
 # dependencies
 node_modules/
