@@ -6,4 +6,5 @@ end: 2024-12
 stack: [Spring Boot, React]
 ---
 
-TODO: description.
+Built responsive web interfaces and Spring Boot REST endpoints supporting core application
+features.

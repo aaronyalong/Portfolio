@@ -2,7 +2,7 @@
 company: Handshake AI
 role: AI Trainer
 start: 2025-01
-# TODO: end date (or `present`)
+end: 2025-12
 ---
 
 LLM output evaluation.
