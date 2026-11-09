@@ -1,0 +1,23 @@
+flowchart TB
+    subgraph prep [Data preparation]
+        direction LR
+        X[ASRS export<br/>3,080 reports] --> P[Expand abbreviations<br/>in search text] --> D[(DuckDB +<br/>embedding index)]
+    end
+
+    subgraph filter [1. Build a filter]
+        direction TB
+        Q[Question] --> F[LLM tool call<br/>build_filter → JSON spec]
+        F --> V[Validate against<br/>observed field values]
+        V -- "rejected:<br/>reasons sent back<br/>(up to 3 calls)" --> F
+        V -- valid --> S[Run filter in DuckDB]
+    end
+
+    subgraph answer [2. Retrieve and answer]
+        direction TB
+        R[Hybrid retrieval over<br/>filtered narratives<br/>BM25 + dense, RRF] --> A[LLM answer from top 10<br/>each claim cites an ACN]
+        A --> C[Check every cited ACN<br/>verified / not shown /<br/>not in corpus]
+        C --> O[Answer + verified sources]
+    end
+
+    prep --> filter
+    prep --> answer
