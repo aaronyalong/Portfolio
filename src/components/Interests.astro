@@ -173,19 +173,22 @@ const interests: Interest[] = [
 				animation-timeline: --branch;
 			}
 
+			/* Ranges in px from the moment the item enters the viewport (not % of the viewport),
+			   so each animation finishes ~200px above the bottom edge on any screen height, and the
+			   last item, near the end of the page, can always scroll far enough to complete. */
 			.branch::after {
 				animation-name: pop;
-				animation-range: entry 0% cover 12%;
+				animation-range: entry 0% cover 60px;
 			}
 
 			.branch::before {
 				animation-name: grow-x;
-				animation-range: cover 8% cover 24%;
+				animation-range: cover 40px cover 130px;
 			}
 
 			.pill {
 				animation-name: slide-in;
-				animation-range: cover 18% cover 34%;
+				animation-range: cover 90px cover 200px;
 			}
 		}
 

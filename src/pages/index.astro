@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Showcase from '../components/Showcase.astro';
 import Interests from '../components/Interests.astro';
+import HeroLinks from '../components/HeroLinks.astro';
 import { getExperience, getProjects } from '../lib/content';
-import { CONTACT } from '../lib/site';
 
 const FEATURED_COUNT = 3;
 const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
@@ -37,9 +37,12 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		<ul class="now rise" style="--rise-step: 2" aria-label="Currently">
 			{now.map((item) => <li>{item}</li>)}
 		</ul>
+		<div class="hero-links rise" style="--rise-step: 3">
+			<HeroLinks />
+		</div>
 	</section>
 
-	<section aria-labelledby="featured-heading" class="node rise" style="--rise-step: 3">
+	<section aria-labelledby="featured-heading" class="node rise" style="--rise-step: 4">
 		<h2 id="featured-heading">Selected work</h2>
 		{
 			featured.length < FEATURED_COUNT && (
@@ -58,17 +61,6 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		</div>
 		<h2 id="interests-heading">Outside of work</h2>
 		<Interests />
-	</section>
-
-	<section aria-labelledby="more-heading" class="node">
-		<h2 id="more-heading">More</h2>
-		<ul class="links">
-			<li><a href="/experience/">Experience &amp; education</a></li>
-			<li><a href={CONTACT.github}>GitHub</a></li>
-			<li><a href={CONTACT.linkedin}>LinkedIn</a></li>
-			<li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
-			<li><a href={CONTACT.resume}>Resume (PDF)</a></li>
-		</ul>
 	</section>
 	</div>
 </BaseLayout>
@@ -148,7 +140,8 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 	/* "Outside of work": Mount Shasta as a faded full-width backdrop with gentle parallax. */
 	.outdoors {
 		isolation: isolate;
-		padding-bottom: var(--space-4);
+		/* Room below the last branch so it can scroll fully into view (it ends the page). */
+		padding-bottom: var(--space-16);
 	}
 
 	.backdrop {
@@ -216,8 +209,8 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 			0 0 18px color-mix(in srgb, var(--color-accent) 70%, transparent);
 	}
 
-	/* Segment from this node down to the next section's node. */
-	.node:not(:last-child)::after {
+	/* Segment from this node down to the next section's node (the last section: see below). */
+	.node::after {
 		content: '';
 		position: absolute;
 		top: calc(var(--node-top) + var(--dot) + 4px);
@@ -234,6 +227,13 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		transform-origin: top;
 	}
 
+	/* The last section's segment ends at its last branch (the middle of the last interest pill,
+	   which sits above the section's bottom padding), instead of running on to a next node. */
+	.node:last-child::after {
+		bottom: calc(var(--space-16) + 1.9rem);
+		background: var(--color-accent);
+	}
+
 	@media (prefers-reduced-motion: no-preference) {
 		/* Hero: node and first segment draw on page load. */
 		.hero.node::before {
@@ -248,7 +248,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		@supports (animation-timeline: view()) {
 			/* Longhands only; see the note in Interests.astro. */
 			.node:not(.hero)::before,
-			.node:not(.hero):not(:last-child)::after {
+			.node:not(.hero)::after {
 				animation-timing-function: linear;
 				animation-fill-mode: both;
 				animation-timeline: --section;
@@ -259,9 +259,15 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 				animation-range: entry 0% entry 15%;
 			}
 
-			.node:not(.hero):not(:last-child)::after {
+			.node:not(.hero)::after {
 				animation-name: grow-y;
 				animation-range: entry 10% cover 50%;
+			}
+
+			/* The last section ends the page, so it may never reach cover 50%: finish drawing
+			   by the time the whole section has entered the viewport instead. */
+			.node:not(.hero):last-child::after {
+				animation-range: entry 0% entry 100%;
 			}
 		}
 	}
@@ -409,9 +415,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		margin-top: var(--space-4);
 	}
 
-	.links {
-		display: grid;
-		gap: var(--space-2);
-		padding-left: var(--space-6);
+	.hero-links {
+		margin-top: var(--space-6);
 	}
 </style>
