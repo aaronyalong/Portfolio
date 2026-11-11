@@ -257,9 +257,13 @@ pre {
 
 	/* Fade up while scrolling into view. Browsers without scroll timelines just show it. */
 	@supports (animation-timeline: view()) {
+		/* Longhands only: an `animation` shorthand next to `animation-timeline` gets merged by
+		   the CSS minifier into one invalid declaration, which browsers then drop. */
 		.reveal,
 		.prose :is(picture, figure, table) {
-			animation: reveal linear both;
+			animation-name: reveal;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
 			animation-timeline: view();
 			animation-range: entry 0% entry 60%;
 		}

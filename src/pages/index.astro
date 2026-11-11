@@ -1,24 +1,35 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getProjects } from '../lib/content';
+import Interests from '../components/Interests.astro';
+import { getExperience, getProjects } from '../lib/content';
 import { CONTACT } from '../lib/site';
 
 const FEATURED_COUNT = 3;
 const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
+
+// "Now" line: current roles come from experience entries that end in `present`.
+const current = (await getExperience())
+	.filter((job) => job.data.end === 'present')
+	.map((job) => `${job.data.role} at ${job.data.company}`);
+const now = [...current, 'M.S. Artificial Intelligence at San José State University'];
 ---
 
 <BaseLayout>
-	<section class="hero">
+	<div class="graph">
+	<section class="hero node">
 		<div class="hero-bg" aria-hidden="true"></div>
 		<h1 class="rise">Aaron Yalong</h1>
 		<p class="pitch rise" style="--rise-step: 1">
 			Software engineer focused on LLM application engineering: agentic systems, RAG pipelines,
 			MCP servers.
 		</p>
+		<ul class="now rise" style="--rise-step: 2" aria-label="Currently">
+			{now.map((item) => <li>{item}</li>)}
+		</ul>
 	</section>
 
-	<section aria-labelledby="featured-heading" class="rise" style="--rise-step: 2">
+	<section aria-labelledby="featured-heading" class="node rise" style="--rise-step: 3">
 		<h2 id="featured-heading">Featured projects</h2>
 		{
 			featured.length < FEATURED_COUNT && (
@@ -41,7 +52,12 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 		<p class="all"><a href="/projects/">All projects →</a></p>
 	</section>
 
-	<section aria-labelledby="more-heading">
+	<section aria-labelledby="interests-heading" class="node">
+		<h2 id="interests-heading">Outside of work</h2>
+		<Interests />
+	</section>
+
+	<section aria-labelledby="more-heading" class="node">
 		<h2 id="more-heading">More</h2>
 		<ul class="links">
 			<li><a href="/experience/">Experience &amp; education</a></li>
@@ -51,6 +67,7 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 			<li><a href={CONTACT.resume}>Resume (PDF)</a></li>
 		</ul>
 	</section>
+	</div>
 </BaseLayout>
 
 <style>
@@ -66,6 +83,148 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 		margin-top: var(--space-3);
 		font-size: var(--text-lg);
 		color: var(--color-text-muted);
+	}
+
+	/*
+	 * Graph rail: a glowing line down the page linking every section, with a node beside each
+	 * heading. --rail is the line's x offset from the content's left edge: in the left margin on
+	 * wide screens, inside a small left padding on narrow ones. Interests.astro reads it too.
+	 */
+	.graph {
+		--rail: -1.1rem;
+		--graph-pad: 1.6rem;
+		--dot: 12px;
+		--heading-mid: 1.1rem; /* vertical middle of an h2's first line */
+		padding-left: var(--graph-pad);
+	}
+
+	@media (min-width: 52rem) {
+		.graph {
+			--rail: -2.25rem;
+			--graph-pad: 0px;
+		}
+	}
+
+	.node {
+		position: relative;
+		--node-top: calc(var(--heading-mid) - var(--dot) / 2);
+		view-timeline: --section block;
+	}
+
+	/* The hero's node sits beside the (larger) h1. */
+	.hero.node {
+		--node-top: calc(
+			var(--space-8) + clamp(var(--text-3xl), 7vw, 3.5rem) * 0.625 - var(--dot) / 2
+		);
+	}
+
+	.node::before {
+		content: '';
+		position: absolute;
+		z-index: 1;
+		top: var(--node-top);
+		left: calc(var(--rail) - var(--dot) / 2);
+		width: var(--dot);
+		height: var(--dot);
+		border-radius: 50%;
+		background: var(--color-accent);
+		box-shadow:
+			0 0 0 4px color-mix(in srgb, var(--color-accent) 22%, transparent),
+			0 0 18px color-mix(in srgb, var(--color-accent) 70%, transparent);
+	}
+
+	/* Segment from this node down to the next section's node. */
+	.node:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		top: calc(var(--node-top) + var(--dot) + 4px);
+		bottom: calc(-1 * (var(--space-12) + var(--heading-mid) - var(--dot) / 2 - 4px));
+		left: calc(var(--rail) - 1px);
+		width: 2px;
+		border-radius: 2px;
+		background: linear-gradient(
+			to bottom,
+			var(--color-accent),
+			color-mix(in srgb, var(--color-accent) 35%, transparent)
+		);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 45%, transparent);
+		transform-origin: top;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		/* Hero: node and first segment draw on page load. */
+		.hero.node::before {
+			animation: pop 0.45s 0.15s ease-out both;
+		}
+
+		.hero.node::after {
+			animation: grow-y 1.2s 0.45s cubic-bezier(0.3, 0.6, 0.2, 1) both;
+		}
+
+		/* Every later section: node pops, then its segment draws, as it scrolls in. */
+		@supports (animation-timeline: view()) {
+			/* Longhands only; see the note in Interests.astro. */
+			.node:not(.hero)::before,
+			.node:not(.hero):not(:last-child)::after {
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: --section;
+			}
+
+			.node:not(.hero)::before {
+				animation-name: pop;
+				animation-range: entry 0% entry 15%;
+			}
+
+			.node:not(.hero):not(:last-child)::after {
+				animation-name: grow-y;
+				animation-range: entry 10% cover 50%;
+			}
+		}
+	}
+
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: scale(0);
+		}
+	}
+
+	@keyframes grow-y {
+		from {
+			transform: scaleY(0);
+		}
+	}
+
+	/* "Now" line: current role(s) and degree, as small pills with a live-status dot. */
+	.now {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		margin-top: var(--space-6);
+		padding: 0;
+		list-style: none;
+		font-size: var(--text-sm);
+	}
+
+	.now li {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding: var(--space-1) var(--space-3);
+		background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		backdrop-filter: blur(6px);
+	}
+
+	.now li::before {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 50%;
+		background: var(--color-accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
 	}
 
 	/* Hero: dot grid + two drifting accent glows, full window width, fading out downward. */
@@ -86,7 +245,8 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 		/* From the header's bottom edge (main's top padding) to below the pitch. */
 		top: calc(-1 * var(--space-12));
 		bottom: calc(-1 * var(--space-8));
-		left: 50%;
+		/* Centred on the page, not on the hero, which the graph's left padding shifts right. */
+		left: calc(50% - var(--graph-pad, 0px) / 2);
 		width: 100vw;
 		transform: translateX(-50%);
 		overflow: hidden; /* keep the glows inside */
