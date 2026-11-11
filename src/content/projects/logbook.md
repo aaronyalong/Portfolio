@@ -6,6 +6,14 @@ repo: https://github.com/aaronyalong/logbook
 context: CMPE 259 project
 featured: true
 order: 2
+highlight:
+  value: 22/22
+  label: valid filter tool calls from Claude in the model screening
+thumbnail:
+  src: /screenshots/logbook-answer.webp
+  alt: Logbook answering a question about landing-gear errors, each claim citing a report ID.
+  width: 716
+  height: 720
 ---
 
 ## Problem

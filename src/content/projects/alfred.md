@@ -6,6 +6,15 @@ repo: https://github.com/aaronyalong/alfred
 status: in-progress
 featured: true
 order: 3
+highlight:
+  value: 37/37
+  label: benchmark facts recovered with Claude vision, vs 10/37 from text alone
+thumbnail:
+  src: /diagrams/alfred-architecture.light.svg
+  dark: /diagrams/alfred-architecture.dark.svg
+  alt: "Alfred's pipeline: ingest course files, flag diagram pages for Claude vision, then generate and check questions."
+  width: 736
+  height: 560
 ---
 
 > **In progress.** This page covers what's built so far: ingestion of course files and a

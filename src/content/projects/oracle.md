@@ -5,6 +5,14 @@ stack: [Python, Ollama, Chroma, FastAPI, TypeScript, MCP]
 repo: https://github.com/aaronyalong/oracle
 featured: true
 order: 1
+highlight:
+  value: "0.90"
+  label: held-out top-3 search score with hybrid search, vs 0.80 vector-only
+thumbnail:
+  src: /screenshots/oracle-ask.webp
+  alt: Oracle's Ask panel in Obsidian, showing a cited answer and its numbered sources.
+  width: 706
+  height: 965
 ---
 
 ## Problem

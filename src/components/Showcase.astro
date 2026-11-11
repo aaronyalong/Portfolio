@@ -1,0 +1,204 @@
+---
+/**
+ * Home "Selected work": a bento of featured projects. The first tile spans the full width
+ * (image beside text); the rest sit two across (image on top). Each tile is one link to the
+ * case study, showing the summary and the project's sourced `highlight` result.
+ */
+import type { Project } from '../lib/content';
+
+interface Props {
+	projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<ul class="showcase">
+	{
+		projects.map((project, i) => {
+			const { title, summary, highlight, thumbnail, caseStudy } = project.data;
+			const href = caseStudy ? `/projects/${project.id}/` : (project.data.repo ?? '/projects/');
+			return (
+				<li class:list={['tile', 'reveal', { wide: i === 0 }]}>
+					<a class="tile-link" href={href} data-spotlight>
+						{thumbnail && (
+							<div class:list={['thumb', { diagram: thumbnail.src.endsWith('.svg') }]}>
+								<picture>
+									{thumbnail.dark && (
+										<source srcset={thumbnail.dark} media="(prefers-color-scheme: dark)" />
+									)}
+									<img
+										src={thumbnail.src}
+										alt={thumbnail.alt}
+										width={thumbnail.width}
+										height={thumbnail.height}
+										loading="lazy"
+									/>
+								</picture>
+							</div>
+						)}
+						<div class="body">
+							<h3 class="title">{title}</h3>
+							<p class="summary">{summary}</p>
+							{highlight && (
+								<p class="stat">
+									<span class="value">{highlight.value}</span>
+									<span class="label">{highlight.label}</span>
+								</p>
+							)}
+							<span class="more">
+								{caseStudy ? 'Read case study' : 'View project'} <span aria-hidden="true">→</span>
+							</span>
+						</div>
+					</a>
+				</li>
+			);
+		})
+	}
+</ul>
+
+<style>
+	.showcase {
+		display: grid;
+		gap: var(--space-4);
+		padding: 0;
+		list-style: none;
+	}
+
+	@media (min-width: 40rem) {
+		.showcase {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.wide {
+			grid-column: 1 / -1;
+		}
+
+		.wide .tile-link {
+			grid-template-columns: 0.85fr 1fr;
+			grid-template-rows: none;
+		}
+
+		.wide .thumb {
+			aspect-ratio: auto;
+			min-height: 17rem;
+			border-bottom: 0;
+			border-right: 1px solid var(--color-border);
+		}
+	}
+
+	.tile-link {
+		display: grid;
+		grid-template-rows: auto 1fr;
+		height: 100%;
+		overflow: hidden;
+		color: inherit;
+		text-decoration: none;
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: calc(var(--radius) * 2);
+		transition:
+			transform 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.tile-link:hover,
+	.tile-link:focus-visible {
+		color: inherit;
+		border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+		box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+
+	.thumb {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 16 / 10;
+		background: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg));
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.thumb img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+		transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
+	/* Diagrams are shown whole, not cropped. */
+	.thumb.diagram img {
+		object-fit: contain;
+		object-position: center;
+		padding: var(--space-4);
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		padding: var(--space-4) var(--space-6) var(--space-6);
+	}
+
+	.title {
+		font-size: var(--text-xl);
+	}
+
+	.summary {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.stat {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+		margin-block: var(--space-2);
+	}
+
+	.value {
+		flex: none;
+		color: var(--color-accent);
+		font-size: 2rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+
+	.label {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+		line-height: 1.4;
+	}
+
+	.more {
+		margin-top: auto;
+		color: var(--color-accent);
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.more span {
+		display: inline-block;
+		transition: transform 0.2s ease;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		@media (hover: hover) {
+			.tile-link:hover {
+				transform: translateY(-3px);
+			}
+
+			.tile-link:hover .thumb img {
+				transform: scale(1.04);
+			}
+
+			.tile-link:hover .more span {
+				transform: translateX(4px);
+			}
+		}
+	}
+</style>

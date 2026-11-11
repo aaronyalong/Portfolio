@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import Showcase from '../components/Showcase.astro';
 import Interests from '../components/Interests.astro';
 import { getExperience, getProjects } from '../lib/content';
 import { CONTACT } from '../lib/site';
@@ -30,7 +30,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 	</section>
 
 	<section aria-labelledby="featured-heading" class="node rise" style="--rise-step: 3">
-		<h2 id="featured-heading">Featured projects</h2>
+		<h2 id="featured-heading">Selected work</h2>
 		{
 			featured.length < FEATURED_COUNT && (
 				<p class="todo">
@@ -38,17 +38,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 				</p>
 			)
 		}
-		{
-			featured.length > 0 && (
-				<ul class="cards">
-					{featured.map((project) => (
-						<li>
-							<ProjectCard project={project} />
-						</li>
-					))}
-				</ul>
-			)
-		}
+		{featured.length > 0 && <Showcase projects={featured} />}
 		<p class="all"><a href="/projects/">All projects →</a></p>
 	</section>
 
@@ -320,13 +310,6 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		to {
 			transform: translate(60px, 30px) scale(1.1);
 		}
-	}
-
-	.cards {
-		display: grid;
-		gap: var(--space-4);
-		padding: 0;
-		list-style: none;
 	}
 
 	.all {

@@ -28,6 +28,18 @@ const projects = defineCollection({
 		status: z.enum(['in-progress', 'complete']).optional(),
 		/** Shown on the home page (pick 3). */
 		featured: z.boolean().default(false),
+		/** Home showcase: one headline result, taken from the case study (never invented). */
+		highlight: z.object({ value: z.string(), label: z.string() }).optional(),
+		/** Home showcase image: a path under public/, an optional dark-mode variant, alt text. */
+		thumbnail: z
+			.object({
+				src: z.string().startsWith('/'),
+				dark: z.string().startsWith('/').optional(),
+				alt: z.string(),
+				width: z.number().int().positive(),
+				height: z.number().int().positive(),
+			})
+			.optional(),
 		/** Lower sorts first; unordered entries sort last, by title. */
 		order: z.number().int().optional(),
 		draft: z.boolean().default(false),
