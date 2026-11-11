@@ -54,11 +54,10 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 
 	<section aria-labelledby="interests-heading" class="node outdoors">
 		<div class="backdrop" aria-hidden="true">
-			<img src="/images/mount-shasta.webp" alt="" width="640" height="427" loading="lazy" />
+			<img src="/images/mount-shasta.webp" alt="" width="2400" height="1600" loading="lazy" />
 		</div>
 		<h2 id="interests-heading">Outside of work</h2>
 		<Interests />
-		<p class="photo-credit">Background: Mount Shasta, photographed by Aaron Yalong</p>
 	</section>
 
 	<section aria-labelledby="more-heading" class="node">
@@ -170,8 +169,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		height: 100%;
 		object-fit: cover;
 		object-position: 50% 40%;
-		/* The photo is 640px wide; a slight blur hides upscaling as a backdrop. */
-		filter: blur(1.5px) saturate(1.15);
+		filter: saturate(1.15);
 		transform: scale(1.12);
 	}
 
@@ -179,13 +177,6 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		.backdrop {
 			opacity: 0.4;
 		}
-	}
-
-	.photo-credit {
-		margin-top: var(--space-6);
-		color: var(--color-text-muted);
-		font-size: var(--text-sm);
-		font-style: italic;
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
