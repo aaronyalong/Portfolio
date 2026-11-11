@@ -10,6 +10,8 @@
 	--color-border: #e3e3e6;
 	--color-accent: #2f5bd3;
 	--color-accent-hover: #1f45ad;
+	/* How much accent goes into decorative glows. */
+	--glow-mix: 32%;
 
 	/* Typography */
 	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -47,6 +49,7 @@
 		--color-border: #2c2c31;
 		--color-accent: #8aa8ff;
 		--color-accent-hover: #b0c4ff;
+		--glow-mix: 50%;
 	}
 }
 
@@ -73,6 +76,9 @@ video {
 html {
 	-webkit-text-size-adjust: 100%;
 	text-size-adjust: 100%;
+	/* Full-bleed decorative layers (100vw includes any scrollbar) must never cause sideways
+	   scroll. Set on html, not body: only the root controls viewport scrolling. */
+	overflow-x: clip;
 }
 
 body {
@@ -221,6 +227,42 @@ pre {
 		font-style: var(--shiki-dark-font-style) !important;
 		font-weight: var(--shiki-dark-font-weight) !important;
 		text-decoration: var(--shiki-dark-text-decoration) !important;
+	}
+}
+
+/* ---------- Motion ----------
+ * Everything that moves lives inside `prefers-reduced-motion: no-preference`, so visitors who
+ * ask their system for less motion get a static page. Nothing is ever hidden without motion.
+ */
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+}
+
+@keyframes reveal {
+	from {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Entrance on page load; stagger with style="--rise-step: N". */
+	.rise {
+		animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+		animation-delay: calc(var(--rise-step, 0) * 100ms);
+	}
+
+	/* Fade up while scrolling into view. Browsers without scroll timelines just show it. */
+	@supports (animation-timeline: view()) {
+		.reveal,
+		.prose :is(picture, figure, table) {
+			animation: reveal linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 60%;
+		}
 	}
 }
 

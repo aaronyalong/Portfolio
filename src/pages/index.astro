@@ -9,15 +9,16 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 ---
 
 <BaseLayout>
-	<section class="intro">
-		<h1>Aaron Yalong</h1>
-		<p class="pitch">
+	<section class="hero">
+		<div class="hero-bg" aria-hidden="true"></div>
+		<h1 class="rise">Aaron Yalong</h1>
+		<p class="pitch rise" style="--rise-step: 1">
 			Software engineer focused on LLM application engineering: agentic systems, RAG pipelines,
 			MCP servers.
 		</p>
 	</section>
 
-	<section aria-labelledby="featured-heading">
+	<section aria-labelledby="featured-heading" class="rise" style="--rise-step: 2">
 		<h2 id="featured-heading">Featured projects</h2>
 		{
 			featured.length < FEATURED_COUNT && (
@@ -65,6 +66,80 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 		margin-top: var(--space-3);
 		font-size: var(--text-lg);
 		color: var(--color-text-muted);
+	}
+
+	/* Hero: dot grid + two drifting accent glows, full window width, fading out downward. */
+	.hero {
+		position: relative;
+		isolation: isolate;
+		padding-block: var(--space-8) var(--space-12);
+	}
+
+	.hero h1 {
+		font-size: clamp(var(--text-3xl), 7vw, 3.5rem);
+		letter-spacing: -0.02em;
+	}
+
+	.hero-bg {
+		position: absolute;
+		z-index: -1;
+		/* From the header's bottom edge (main's top padding) to below the pitch. */
+		top: calc(-1 * var(--space-12));
+		bottom: calc(-1 * var(--space-8));
+		left: 50%;
+		width: 100vw;
+		transform: translateX(-50%);
+		overflow: hidden; /* keep the glows inside */
+		background-image: radial-gradient(
+			circle at 1px 1px,
+			color-mix(in srgb, var(--color-text) 20%, transparent) 1px,
+			transparent 0
+		);
+		background-size: 22px 22px;
+		mask-image: linear-gradient(to bottom, black 35%, transparent);
+	}
+
+	.hero-bg::before,
+	.hero-bg::after {
+		content: '';
+		position: absolute;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: radial-gradient(
+			closest-side,
+			color-mix(in srgb, var(--color-accent) var(--glow-mix), transparent),
+			transparent
+		);
+	}
+
+	/* Sizes and offsets shrink with the window, so phones still see both glows. */
+	.hero-bg::before {
+		top: -140px;
+		left: calc(50% - min(460px, 75vw));
+		width: min(520px, 110vw);
+	}
+
+	.hero-bg::after {
+		top: 20px;
+		left: calc(50% + min(20px, 5vw));
+		width: min(400px, 80vw);
+		opacity: 0.75;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.hero-bg::before {
+			animation: drift 18s ease-in-out infinite alternate;
+		}
+
+		.hero-bg::after {
+			animation: drift 22s ease-in-out infinite alternate-reverse;
+		}
+	}
+
+	@keyframes drift {
+		to {
+			transform: translate(60px, 30px) scale(1.1);
+		}
 	}
 
 	.cards {

@@ -12,7 +12,7 @@ const { project, as: Heading = 'h3' } = Astro.props;
 const { title, summary, repo, play, caseStudy } = project.data;
 ---
 
-<article class="card">
+<article class="card reveal">
 	<Heading class="title">
 		{caseStudy ? <a href={`/projects/${project.id}/`}>{title}</a> : title}
 	</Heading>
@@ -36,6 +36,23 @@ const { title, summary, repo, play, caseStudy } = project.data;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius);
+		transition:
+			transform 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	/* Hover (and keyboard focus inside the card): the border and shadow pick up the accent. */
+	.card:hover,
+	.card:focus-within {
+		border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+		box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	}
+
+	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+		.card:hover {
+			transform: translateY(-3px);
+		}
 	}
 
 	.title {
