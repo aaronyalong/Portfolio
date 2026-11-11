@@ -47,7 +47,7 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 			<li><a href={CONTACT.github}>GitHub</a></li>
 			<li><a href={CONTACT.linkedin}>LinkedIn</a></li>
 			<li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
-			<li class="todo">TODO: resume PDF</li>
+			<li><a href={CONTACT.resume}>Resume (PDF)</a></li>
 		</ul>
 	</section>
 </BaseLayout>
