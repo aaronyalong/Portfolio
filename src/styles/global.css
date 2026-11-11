@@ -270,6 +270,23 @@ pre {
 	}
 }
 
+/* ---------- Cursor spotlight ----------
+ * src/scripts/spotlight.ts sets --mx / --my on the [data-spotlight] element under the pointer.
+ * This rule paints the glow for plain `data-spotlight` elements; an element with a layer
+ * selector (data-spotlight=".x") paints it on that layer itself. Elements using it must set
+ * background-color, not the `background` shorthand, which would reset this image.
+ * Tune per element with --spot-size and --spot-mix.
+ */
+@media (hover: hover) and (pointer: fine) {
+	[data-spotlight=''] {
+		background-image: radial-gradient(
+			circle var(--spot-size, 220px) at var(--mx, -1000px) var(--my, -1000px),
+			color-mix(in srgb, var(--color-accent) var(--spot-mix, 14%), transparent),
+			transparent 70%
+		);
+	}
+}
+
 /* ---------- Utilities ---------- */
 .container {
 	width: 100%;

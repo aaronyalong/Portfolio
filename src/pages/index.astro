@@ -17,7 +17,7 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 
 <BaseLayout>
 	<div class="graph">
-	<section class="hero node">
+	<section class="hero node" data-spotlight=".hero-bg">
 		<div class="hero-bg" aria-hidden="true"></div>
 		<h1 class="rise">Aaron Yalong</h1>
 		<p class="pitch rise" style="--rise-step: 1">
@@ -257,6 +257,26 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		);
 		background-size: 22px 22px;
 		mask-image: linear-gradient(to bottom, black 35%, transparent);
+	}
+
+	/* Cursor spotlight (src/scripts/spotlight.ts writes --mx / --my here): under the dots. */
+	@media (hover: hover) and (pointer: fine) {
+		.hero-bg {
+			background-image:
+				radial-gradient(
+					circle at 1px 1px,
+					color-mix(in srgb, var(--color-text) 20%, transparent) 1px,
+					transparent 0
+				),
+				radial-gradient(
+					circle 460px at var(--mx, -1000px) var(--my, -1000px),
+					color-mix(in srgb, var(--color-accent) 18%, transparent),
+					transparent 70%
+				);
+			background-size:
+				22px 22px,
+				100% 100%;
+		}
 	}
 
 	.hero-bg::before,

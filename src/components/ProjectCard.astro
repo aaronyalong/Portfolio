@@ -12,7 +12,7 @@ const { project, as: Heading = 'h3' } = Astro.props;
 const { title, summary, repo, play, caseStudy } = project.data;
 ---
 
-<article class="card reveal">
+<article class="card reveal" data-spotlight>
 	<Heading class="title">
 		{caseStudy ? <a href={`/projects/${project.id}/`}>{title}</a> : title}
 	</Heading>
@@ -33,7 +33,7 @@ const { title, summary, repo, play, caseStudy } = project.data;
 		display: grid;
 		gap: var(--space-2);
 		padding: var(--space-4) var(--space-6);
-		background: var(--color-surface);
+		background-color: var(--color-surface);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius);
 		transition:
