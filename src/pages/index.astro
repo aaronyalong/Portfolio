@@ -19,7 +19,17 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 	<div class="graph">
 	<section class="hero node" data-spotlight=".hero-bg">
 		<div class="hero-bg" aria-hidden="true"></div>
-		<h1 class="rise">Aaron Yalong</h1>
+		<div class="identity rise">
+			<img
+				class="avatar"
+				src="/images/headshot.webp"
+				alt="Headshot of Aaron Yalong"
+				width="256"
+				height="256"
+				fetchpriority="high"
+			/>
+			<h1>Aaron Yalong</h1>
+		</div>
 		<p class="pitch rise" style="--rise-step: 1">
 			Software engineer focused on LLM application engineering: agentic systems, RAG pipelines,
 			MCP servers.
@@ -42,9 +52,13 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		<p class="all"><a href="/projects/">All projects →</a></p>
 	</section>
 
-	<section aria-labelledby="interests-heading" class="node">
+	<section aria-labelledby="interests-heading" class="node outdoors">
+		<div class="backdrop" aria-hidden="true">
+			<img src="/images/mount-shasta.webp" alt="" width="640" height="427" loading="lazy" />
+		</div>
 		<h2 id="interests-heading">Outside of work</h2>
 		<Interests />
+		<p class="photo-credit">Background: Mount Shasta, photographed by Aaron Yalong</p>
 	</section>
 
 	<section aria-labelledby="more-heading" class="node">
@@ -101,11 +115,99 @@ const now = [...current, 'M.S. Artificial Intelligence at San José State Univer
 		view-timeline: --section block;
 	}
 
-	/* The hero's node sits beside the (larger) h1. */
+	/* The hero's node sits beside the avatar + name row (the avatar is the taller of the two). */
 	.hero.node {
-		--node-top: calc(
-			var(--space-8) + clamp(var(--text-3xl), 7vw, 3.5rem) * 0.625 - var(--dot) / 2
-		);
+		--avatar: 4rem;
+		--node-top: calc(var(--space-8) + var(--avatar) / 2 - var(--dot) / 2);
+	}
+
+	@media (min-width: 40rem) {
+		.hero.node {
+			--avatar: 5.5rem;
+		}
+	}
+
+	.identity {
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+	}
+
+	/* Small on purpose: the source photo is soft. */
+	.avatar {
+		flex: none;
+		width: var(--avatar);
+		height: var(--avatar);
+		border-radius: 50%;
+		object-fit: cover;
+		box-shadow:
+			0 0 0 3px var(--color-bg),
+			0 0 0 5px color-mix(in srgb, var(--color-accent) 65%, transparent),
+			0 0 28px color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+
+	/* "Outside of work": Mount Shasta as a faded full-width backdrop with gentle parallax. */
+	.outdoors {
+		isolation: isolate;
+		padding-bottom: var(--space-4);
+	}
+
+	.backdrop {
+		position: absolute;
+		z-index: -1;
+		top: calc(-1 * var(--space-12));
+		bottom: calc(-1 * var(--space-8));
+		left: calc(50% - var(--graph-pad, 0px) / 2);
+		width: 100vw;
+		transform: translateX(-50%);
+		overflow: hidden;
+		opacity: 0.6;
+		mask-image: linear-gradient(to bottom, transparent, black 22%, black 72%, transparent);
+	}
+
+	.backdrop img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 50% 40%;
+		/* The photo is 640px wide; a slight blur hides upscaling as a backdrop. */
+		filter: blur(1.5px) saturate(1.15);
+		transform: scale(1.12);
+	}
+
+	@media (prefers-color-scheme: light) {
+		.backdrop {
+			opacity: 0.4;
+		}
+	}
+
+	.photo-credit {
+		margin-top: var(--space-6);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+		font-style: italic;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		@supports (animation-timeline: view()) {
+			/* Longhands only; see the note in Interests.astro. */
+			.backdrop img {
+				animation-name: parallax;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: --section;
+				animation-range: cover 0% cover 100%;
+			}
+		}
+	}
+
+	@keyframes parallax {
+		from {
+			transform: translateY(-7%) scale(1.12);
+		}
+		to {
+			transform: translateY(7%) scale(1.12);
+		}
 	}
 
 	.node::before {
