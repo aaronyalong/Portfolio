@@ -8,8 +8,6 @@ featured: true
 order: 2
 ---
 
-<p class="todo">TODO: screenshot or recording of the Streamlit app (an answer with highlighted citations and the "How this answer was built" panel)</p>
-
 ## Problem
 
 NASA's Aviation Safety Reporting System (ASRS) collects voluntary, de-identified reports of
@@ -22,6 +20,20 @@ fields. "Compare what reporters said about deferred maintenance in 2019 versus 2
 filter and the narratives. Logbook answers such questions in plain language and cites every claim
 to a report by its ID (ACN). It gives counts only for this corpus and never as real-world rates,
 because voluntary reports can't support rates.
+
+<figure>
+	<img
+		src="/screenshots/logbook-answer.webp"
+		alt="The ASRS Maintenance Report Assistant in Streamlit. The question 'What kinds of errors do mechanics report during landing gear inspections?' is answered in sections. The answer says the filter matched 306 landing-gear reports and that the shown reports can't indicate how often each error occurs; each example ends with a highlighted citation such as ACN 1290978."
+		width="716"
+		height="720"
+		loading="lazy"
+	/>
+	<figcaption>
+		An answer in the Streamlit app. The filter matched 306 landing-gear reports; the answer
+		scopes that count, and every example cites its report.
+	</figcaption>
+</figure>
 
 ## Architecture
 
@@ -82,6 +94,20 @@ in blue if it passed and in red with ⚠ if it failed.
 Citations are plain text rather than the Anthropic API's citation feature, so a local model can
 follow exactly the same format. Narratives are HTML-escaped inside the prompt so a report can't
 close its own tag and inject instructions.
+
+<figure>
+	<img
+		src="/screenshots/logbook-source.webp"
+		alt="An expanded source card for ACN 1011022, 2012, B747-400: the ASRS synopsis about a line mechanic missing an inspection item on a brake change after a merger, followed by the reporter's full narrative."
+		width="656"
+		height="690"
+		loading="lazy"
+	/>
+	<figcaption>
+		A cited report's source card: the ASRS synopsis and the reporter's full narrative, so any
+		claim can be checked against the original.
+	</figcaption>
+</figure>
 
 ### No vector database
 

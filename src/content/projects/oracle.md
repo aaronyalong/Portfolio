@@ -7,8 +7,6 @@ featured: true
 order: 1
 ---
 
-<p class="todo">TODO: screenshot or short GIF of the Obsidian panel (Ask and Search tabs)</p>
-
 ## Problem
 
 Obsidian's search bar matches words, not meaning. Typing a question into it finds the section
@@ -19,6 +17,21 @@ the notes they came from. Notes are private, so everything runs on your machine:
 Generating an answer is the easy part. The hard part is trusting it: small local models
 sometimes answer from their own training data and still cite a note, which looks grounded but
 isn't.
+
+<figure>
+	<img
+		src="/screenshots/oracle-ask.webp"
+		alt="Oracle's sidebar panel in Obsidian, Ask tab. The question 'Artificial Intelligence' is answered with a summary of a degree plan by semester, each course followed by a numbered citation. Below: '73.5s · 5 of 5 sources cited' and five source cards, each linking to a section of the degree-plan note."
+		width="706"
+		height="965"
+		loading="lazy"
+	/>
+	<figcaption>
+		Ask in the Obsidian sidebar, on a personal vault. A one-word topic question is answered from
+		a degree-plan note, and each claim cites the section it came from. qwen2.5:7b on CPU took
+		73.5 s.
+	</figcaption>
+</figure>
 
 ## Architecture
 
