@@ -29,6 +29,7 @@ const jobs = await Promise.all(
 							{range.start ?? <span class="todo">TODO: start</span>}
 							{' – '}
 							{range.end ?? <span class="todo">TODO: end</span>}
+							{job.data.partTime && ' · Part-time'}
 						</p>
 						<div class="body">
 							<Content />

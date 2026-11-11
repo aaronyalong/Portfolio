@@ -42,6 +42,8 @@ const experience = defineCollection({
 		/** Omit when unknown; the page shows a TODO instead. */
 		start: yearMonth.optional(),
 		end: z.union([yearMonth, z.literal('present')]).optional(),
+		/** Shown after the dates. Delete when the role becomes full-time. */
+		partTime: z.boolean().default(false),
 		stack: z.array(z.string()).default([]),
 	}),
 });

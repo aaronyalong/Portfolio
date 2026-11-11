@@ -1,6 +1,7 @@
 ---
 company: Intuitive Machines
-role: "TODO: job title"
+role: Junior Software Engineer
+partTime: true
 start: 2026-03
 end: present
 stack: [Scala, LangChain4j, Claude]
