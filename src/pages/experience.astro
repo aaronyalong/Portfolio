@@ -1,15 +1,12 @@
 ---
-import { render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { formatRange, getExperience, isTodo } from '../lib/content';
+import { formatRange, formatYearMonth, getEducation, getExperience, isExpected, isTodo } from '../lib/content';
 
-const jobs = await Promise.all(
-	(await getExperience()).map(async (job) => ({
-		job,
-		range: formatRange(job.data.start, job.data.end),
-		Content: (await render(job)).Content,
-	})),
-);
+const jobs = (await getExperience()).map((job) => ({
+	job,
+	range: formatRange(job.data.start, job.data.end),
+}));
+const degrees = await getEducation();
 ---
 
 <BaseLayout title="Experience" description="Work experience and education of Aaron Yalong.">
@@ -19,21 +16,19 @@ const jobs = await Promise.all(
 		<h2 id="experience-heading">Experience</h2>
 		<ol class="jobs">
 			{
-				jobs.map(({ job, range, Content }) => (
+				jobs.map(({ job, range }) => (
 					<li class="job">
 						<h3>
-							<span class:list={{ todo: isTodo(job.data.role) }}>{job.data.role}</span>{' '}
-							<span class="company">· {job.data.company}</span>
+							<span class:list={{ todo: isTodo(job.data.title) }}>{job.data.title}</span>{' '}
+							<span class="company">· {job.data.org}</span>
 						</h3>
 						<p class="dates">
 							{range.start ?? <span class="todo">TODO: start</span>}
 							{' – '}
 							{range.end ?? <span class="todo">TODO: end</span>}
-							{job.data.partTime && ' · Part-time'}
+							{job.data.type === 'part-time' && ' · Part-time'}
 						</p>
-						<div class="body">
-							<Content />
-						</div>
+						{job.data.summary && <p class="body">{job.data.summary}</p>}
 						{job.data.stack.length > 0 && (
 							<p class="stack">{job.data.stack.join(' · ')}</p>
 						)}
@@ -46,21 +41,22 @@ const jobs = await Promise.all(
 	<section aria-labelledby="education-heading">
 		<h2 id="education-heading">Education</h2>
 		<ol class="jobs">
-			<li class="job">
-				<h3>
-					M.S. Artificial Intelligence{' '}
-					<span class="company">· San José State University</span>
-				</h3>
-				<p class="dates">Expected Dec 2027</p>
-			</li>
-			<li class="job">
-				<h3>
-					B.S. Computer Science &amp; Engineering{' '}
-					<span class="company">· University of California, Irvine</span>
-				</h3>
-				<p class="dates">2024</p>
-				<p class="body">GPA 3.8 · Cum Laude</p>
-			</li>
+			{
+				degrees.map((degree) => (
+					<li class="job">
+						<h3>
+							{degree.data.title} <span class="company">· {degree.data.org}</span>
+						</h3>
+						{degree.data.end && (
+							<p class="dates">
+								{isExpected(degree) && 'Expected '}
+								{formatYearMonth(degree.data.end)}
+							</p>
+						)}
+						{degree.data.summary && <p class="body">{degree.data.summary}</p>}
+					</li>
+				))
+			}
 		</ol>
 	</section>
 </BaseLayout>

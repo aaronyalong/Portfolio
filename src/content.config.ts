@@ -1,5 +1,5 @@
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { defineCollection, reference } from 'astro:content';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 /** "2024" or "2024-03". */
@@ -46,18 +46,40 @@ const projects = defineCollection({
 	}),
 });
 
-const experience = defineCollection({
-	loader: glob({ pattern: '**/*.md', base: './src/content/experience' }),
-	schema: z.object({
-		company: z.string(),
-		role: z.string(),
-		/** Omit when unknown; the page shows a TODO instead. */
-		start: yearMonth.optional(),
-		end: z.union([yearMonth, z.literal('present')]).optional(),
-		/** Shown after the dates. Delete when the role becomes full-time. */
-		partTime: z.boolean().default(false),
-		stack: z.array(z.string()).default([]),
-	}),
+/**
+ * One timeline entry: a role (experience) or a degree (education). Quote dates in YAML
+ * ("2024"), or a bare year parses as a number and fails validation.
+ */
+const timelineEntry = z.object({
+	/** Job title or degree. */
+	title: z.string(),
+	/** Company or school. */
+	org: z.string(),
+	/** Omit when unknown; experience then shows a TODO, education shows the end date only. */
+	start: yearMonth.optional(),
+	/** "present" marks a current role. A degree whose end is after the build date is "Expected". */
+	end: z.union([yearMonth, z.literal('present')]).optional(),
+	/** Shown next to the dates; omit for full-time. */
+	type: z.enum(['full-time', 'part-time', 'contract', 'internship']).optional(),
+	/** One line. Can be combined with bullets. */
+	summary: z.string().optional(),
+	bullets: z.array(z.string()).max(4).default([]),
+	stack: z.array(z.string()).default([]),
+	/** External links, e.g. a repo. */
+	links: z.array(z.object({ label: z.string(), href: z.url() })).default([]),
+	/** Related projects; only those with a case study are rendered as links. */
+	projects: z.array(reference('projects')).default([]),
+	coursework: z.array(z.string()).default([]),
 });
 
-export const collections = { projects, experience };
+const experience = defineCollection({
+	loader: file('./src/content/experience.yaml'),
+	schema: timelineEntry,
+});
+
+const education = defineCollection({
+	loader: file('./src/content/education.yaml'),
+	schema: timelineEntry,
+});
+
+export const collections = { projects, experience, education };

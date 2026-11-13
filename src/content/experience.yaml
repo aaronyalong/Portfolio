@@ -1,0 +1,32 @@
+# Experience timeline. Schema: `timelineEntry` in src/content.config.ts.
+# Order here doesn't matter: the page sorts by start date, most recent first.
+# Quote dates ("2024-03"), or YAML may read them as numbers.
+
+- id: intuitive-machines
+  title: Junior Software Engineer
+  org: Intuitive Machines
+  type: part-time
+  start: "2026-03"
+  end: present
+  summary: >-
+    Builds an internal agentic AI desktop application: CAD automation, manufacturing-data
+    integration, document tooling, performance work.
+  stack: [Scala, LangChain4j, Claude]
+
+- id: handshake-ai
+  title: AI Trainer
+  org: Handshake AI
+  type: contract
+  start: "2025-01"
+  end: present
+  summary: LLM output evaluation.
+
+- id: luminexa
+  title: Junior Software Developer
+  org: Luminexa
+  start: "2024-08"
+  end: "2024-12"
+  summary: >-
+    Built responsive web interfaces and Spring Boot REST endpoints supporting core application
+    features.
+  stack: [Spring Boot, React]

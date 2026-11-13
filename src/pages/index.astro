@@ -11,7 +11,7 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, F
 // "Now" line: current roles come from experience entries that end in `present`.
 const current = (await getExperience())
 	.filter((job) => job.data.end === 'present')
-	.map((job) => `${job.data.role} at ${job.data.company}`);
+	.map((job) => `${job.data.title} at ${job.data.org}`);
 const now = [...current, 'M.S. Artificial Intelligence at San José State University'];
 ---
 
