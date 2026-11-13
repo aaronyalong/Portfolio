@@ -1,4 +1,5 @@
 ---
+import TagList from './TagList.astro';
 import type { Project } from '../lib/content';
 
 interface Props {
@@ -18,13 +19,7 @@ const meta = [context, status === 'in-progress' ? 'In progress' : undefined].fil
 		</p>
 	)
 }
-{
-	stack.length > 0 && (
-		<ul class="stack" aria-label="Tech stack">
-			{stack.map((tech) => <li>{tech}</li>)}
-		</ul>
-	)
-}
+<TagList items={stack} />
 
 <style>
 	.meta {
@@ -33,23 +28,6 @@ const meta = [context, status === 'in-progress' ? 'In progress' : undefined].fil
 	}
 
 	.role {
-		font-size: var(--text-sm);
-	}
-
-	.stack {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-2);
-		padding: 0;
-		list-style: none;
-	}
-
-	.stack li {
-		padding: 0 var(--space-2);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
-		color: var(--color-text-muted);
-		font-family: var(--font-mono);
 		font-size: var(--text-sm);
 	}
 </style>

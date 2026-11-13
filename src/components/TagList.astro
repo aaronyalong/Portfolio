@@ -1,0 +1,37 @@
+---
+/** A row of small outlined tags, e.g. a tech stack. Renders nothing for an empty list. */
+interface Props {
+	items: string[];
+	/** Accessible name for the list. */
+	label?: string;
+}
+
+const { items, label = 'Tech stack' } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<ul class="tags" aria-label={label}>
+			{items.map((item) => <li>{item}</li>)}
+		</ul>
+	)
+}
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		padding: 0;
+		list-style: none;
+	}
+
+	.tags li {
+		padding: 0 var(--space-2);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		color: var(--color-text-muted);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+	}
+</style>

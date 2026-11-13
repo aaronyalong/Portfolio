@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import TagList from '../components/TagList.astro';
 import { formatRange, formatYearMonth, getEducation, getExperience, isExpected, isTodo } from '../lib/content';
 
 const jobs = (await getExperience()).map((job) => ({
@@ -29,9 +30,7 @@ const degrees = await getEducation();
 							{job.data.type === 'part-time' && ' · Part-time'}
 						</p>
 						{job.data.summary && <p class="body">{job.data.summary}</p>}
-						{job.data.stack.length > 0 && (
-							<p class="stack">{job.data.stack.join(' · ')}</p>
-						)}
+						<TagList items={job.data.stack} />
 					</li>
 				))
 			}
@@ -90,14 +89,9 @@ const degrees = await getEducation();
 		color: var(--color-text-muted);
 	}
 
-	.dates,
-	.stack {
+	.dates {
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
-	}
-
-	.stack {
-		font-family: var(--font-mono);
 	}
 
 	.body {
