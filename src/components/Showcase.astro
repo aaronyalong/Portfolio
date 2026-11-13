@@ -17,7 +17,7 @@ const { projects } = Astro.props;
 	{
 		projects.map((project, i) => {
 			const { title, summary, highlight, thumbnail, caseStudy } = project.data;
-			const href = caseStudy ? `/projects/${project.id}/` : (project.data.repo ?? '/projects/');
+			const href = caseStudy ? `/projects/${project.id}/` : (project.data.repo ?? '/#projects');
 			return (
 				<li class:list={['tile', 'reveal', { wide: i === 0 }]}>
 					<a class="tile-link" href={href} data-spotlight>
