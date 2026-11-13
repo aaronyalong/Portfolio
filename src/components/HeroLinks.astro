@@ -1,8 +1,10 @@
 ---
 /**
- * Hero link row: a primary Resume button plus round icon buttons for GitHub, LinkedIn and
- * email. Icons are inline SVG in currentColor; every button has an accessible label.
+ * Hero link row: a primary Resume button (hidden if the PDF is missing) plus round icon
+ * buttons for GitHub, LinkedIn and email. Icons are inline SVG in currentColor; every
+ * button has an accessible label.
  */
+import ResumeButton from './ResumeButton.astro';
 import { CONTACT } from '../lib/site';
 
 const SVG = (body: string, filled = false) =>
@@ -32,16 +34,10 @@ const icons = [
 	},
 ];
 
-const downloadIcon = SVG(
-	'<path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5.5"/><path d="M12 11.5v6m-2.75-2.75L12 17.5l2.75-2.75"/>',
-);
 ---
 
 <div class="links">
-	<a class="resume" href={CONTACT.resume}>
-		<span class="icon" set:html={downloadIcon} />
-		Resume
-	</a>
+	<ResumeButton />
 	<ul class="icons">
 		{
 			icons.map(({ label, href, svg }) => (
@@ -76,29 +72,6 @@ const downloadIcon = SVG(
 		height: 1.25rem;
 	}
 
-	.resume {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
-		border-radius: 999px;
-		background: var(--color-accent);
-		color: var(--color-bg);
-		font-weight: 600;
-		text-decoration: none;
-		box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--color-accent) 80%, transparent);
-		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease,
-			background-color 0.2s ease;
-	}
-
-	.resume:hover {
-		color: var(--color-bg);
-		background: var(--color-accent-hover);
-		box-shadow: 0 10px 28px -8px color-mix(in srgb, var(--color-accent) 90%, transparent);
-	}
-
 	.icon-button {
 		display: grid;
 		place-items: center;
@@ -124,7 +97,6 @@ const downloadIcon = SVG(
 	}
 
 	@media (prefers-reduced-motion: no-preference) and (hover: hover) {
-		.resume:hover,
 		.icon-button:hover {
 			transform: translateY(-2px);
 		}
