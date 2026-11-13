@@ -57,13 +57,5 @@ export function formatYearMonth(value: string): string {
 	return month ? `${MONTHS[Number(month) - 1]} ${year}` : year;
 }
 
-/** Formatted start/end; `null` marks a part that is unknown and needs a TODO. */
-export function formatRange(start?: string, end?: string): { start: string | null; end: string | null } {
-	return {
-		start: start ? formatYearMonth(start) : null,
-		end: end ? formatYearMonth(end) : null,
-	};
-}
-
 /** True for placeholder strings like "TODO: job title". */
 export const isTodo = (value: string) => value.startsWith('TODO');

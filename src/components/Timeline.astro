@@ -1,0 +1,229 @@
+---
+/**
+ * Vertical timeline: a rail on the left with one dot per entry. The first current entry
+ * (the list arrives sorted, most recent first) is the "lead" and gets the accent dot;
+ * other current entries get a solid muted dot, past entries a hollow one.
+ * The dot and rail are decorative and hidden from assistive tech.
+ */
+import TagList from './TagList.astro';
+import { formatYearMonth, isCurrent, isTodo, type TimelineItem } from '../lib/content';
+
+interface Props {
+	items: TimelineItem[];
+}
+
+const { items } = Astro.props;
+
+const TYPE_LABELS = {
+	'full-time': 'Full-time',
+	'part-time': 'Part-time',
+	contract: 'Contract',
+	internship: 'Internship',
+} as const;
+
+const leadId = items.find(isCurrent)?.id;
+
+const entries = items.map((item) => {
+	const { start, end, type } = item.data;
+	const current = isCurrent(item);
+	return {
+		item,
+		state: item.id === leadId ? 'lead' : current ? 'current' : 'past',
+		current,
+		typeLabel: type ? TYPE_LABELS[type] : undefined,
+		start,
+		end,
+	};
+});
+---
+
+<ol class="timeline">
+	{
+		entries.map(({ item, state, current, typeLabel, start, end }) => (
+			<li class="entry" data-state={state}>
+				<span class="dot" aria-hidden="true" />
+				<div class="head">
+					<h3>
+						<span class:list={{ todo: isTodo(item.data.title) }}>{item.data.title}</span>{' '}
+						<span class="org">
+							<span class="sep" aria-hidden="true">· </span>
+							{item.data.org}
+						</span>
+					</h3>
+					<p class="when">
+						{start ? (
+							<time datetime={start}>{formatYearMonth(start)}</time>
+						) : (
+							<span class="todo">TODO: start</span>
+						)}
+						{' – '}
+						{end === 'present' ? (
+							'Present'
+						) : end ? (
+							<time datetime={end}>{formatYearMonth(end)}</time>
+						) : (
+							<span class="todo">TODO: end</span>
+						)}
+					</p>
+				</div>
+				{(current || typeLabel) && (
+					<p class="meta">
+						{current && <span class="current">Current</span>}
+						{typeLabel}
+					</p>
+				)}
+				{item.data.summary && <p>{item.data.summary}</p>}
+				{item.data.bullets.length > 0 && (
+					<ul class="bullets">
+						{item.data.bullets.map((bullet) => (
+							<li>{bullet}</li>
+						))}
+					</ul>
+				)}
+				<TagList items={item.data.stack} />
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.timeline {
+		/* Geometry: the dot is centred on the first line of the title. */
+		--dot: 0.75rem;
+		--indent: var(--space-8);
+		--gap: var(--space-8);
+		--title-line: calc(var(--text-lg) * 1.25);
+		--dot-top: calc((var(--title-line) - var(--dot)) / 2);
+		--rail: color-mix(in srgb, var(--color-text-muted) 35%, transparent);
+
+		display: grid;
+		gap: var(--gap);
+		padding: 0;
+		list-style: none;
+	}
+
+	.entry {
+		position: relative;
+		display: grid;
+		gap: var(--space-2);
+		padding-left: var(--indent);
+	}
+
+	/* ---------- Dot ---------- */
+	.dot {
+		position: absolute;
+		top: var(--dot-top);
+		left: 0;
+		width: var(--dot);
+		height: var(--dot);
+		border-radius: 50%;
+		/* Past: hollow. */
+		background: var(--color-bg);
+		border: 2px solid var(--color-text-muted);
+	}
+
+	[data-state='current'] .dot {
+		background: var(--color-text-muted);
+	}
+
+	[data-state='lead'] .dot {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		box-shadow:
+			0 0 0 4px color-mix(in srgb, var(--color-accent) 22%, transparent),
+			0 0 14px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+
+	/* ---------- Rail: a segment from each dot down to the next one ---------- */
+	.entry:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		top: calc(var(--dot-top) + var(--dot) + 4px);
+		bottom: calc(4px - var(--gap) - var(--dot-top));
+		left: calc(var(--dot) / 2 - 1px);
+		width: 2px;
+		border-radius: 2px;
+		background: var(--rail);
+	}
+
+	.entry[data-state='lead']:not(:last-child)::after {
+		background: linear-gradient(to bottom, var(--color-accent), var(--rail));
+	}
+
+	/* ---------- Content ---------- */
+	.head {
+		display: grid;
+		gap: 0 var(--space-4);
+	}
+
+	@media (min-width: 40rem) {
+		/* Title left, dates right-aligned on the same line. */
+		.head {
+			grid-template-columns: 1fr auto;
+			align-items: baseline;
+		}
+	}
+
+	h3 {
+		font-size: var(--text-lg);
+	}
+
+	.org {
+		font-weight: 400;
+		color: var(--color-text-muted);
+	}
+
+	/* Narrow screens: the org gets its own line, so the separator would start it. */
+	@media (max-width: 39.99rem) {
+		.org {
+			display: block;
+		}
+
+		.sep {
+			display: none;
+		}
+	}
+
+	.when,
+	.meta {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.when {
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.current {
+		padding: 0 var(--space-2);
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		color: var(--color-text);
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
+	[data-state='lead'] .current {
+		border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+		background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+		color: var(--color-accent);
+	}
+
+	.bullets {
+		display: grid;
+		gap: var(--space-1);
+		padding-left: var(--space-4);
+	}
+
+	.bullets li::marker {
+		color: var(--color-text-muted);
+	}
+</style>

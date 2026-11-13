@@ -1,12 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import TagList from '../components/TagList.astro';
-import { formatRange, formatYearMonth, getEducation, getExperience, isExpected, isTodo } from '../lib/content';
+import Timeline from '../components/Timeline.astro';
+import { formatYearMonth, getEducation, getExperience, isExpected } from '../lib/content';
 
-const jobs = (await getExperience()).map((job) => ({
-	job,
-	range: formatRange(job.data.start, job.data.end),
-}));
+const jobs = await getExperience();
 const degrees = await getEducation();
 ---
 
@@ -15,26 +12,7 @@ const degrees = await getEducation();
 
 	<section aria-labelledby="experience-heading">
 		<h2 id="experience-heading">Experience</h2>
-		<ol class="jobs">
-			{
-				jobs.map(({ job, range }) => (
-					<li class="job">
-						<h3>
-							<span class:list={{ todo: isTodo(job.data.title) }}>{job.data.title}</span>{' '}
-							<span class="company">· {job.data.org}</span>
-						</h3>
-						<p class="dates">
-							{range.start ?? <span class="todo">TODO: start</span>}
-							{' – '}
-							{range.end ?? <span class="todo">TODO: end</span>}
-							{job.data.type === 'part-time' && ' · Part-time'}
-						</p>
-						{job.data.summary && <p class="body">{job.data.summary}</p>}
-						<TagList items={job.data.stack} />
-					</li>
-				))
-			}
-		</ol>
+		<Timeline items={jobs} />
 	</section>
 
 	<section aria-labelledby="education-heading">
