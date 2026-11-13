@@ -35,7 +35,11 @@
 	--space-16: 4rem;
 
 	/* Layout */
-	--content-width: 44rem;
+	--content-width: 72rem;
+	/* Running text (bio, timeline bullets, case-study paragraphs) stays at a readable measure. */
+	--prose-width: 70ch;
+	/* Case-study column: prose inside it, wider figures, diagrams and tables up to its edge. */
+	--article-width: 50rem;
 	--gutter: var(--space-4);
 	--radius: 6px;
 	/* Sticky header height; anchor targets scroll to just below it. */
@@ -153,6 +157,11 @@ pre {
 /* ---------- Prose (rendered Markdown) ---------- */
 .prose > * + * {
 	margin-top: var(--space-4);
+}
+
+/* Text blocks keep a readable line length; figures, tables and code may use the full column. */
+.prose > :is(p, ul, ol, blockquote, h2, h3, h4) {
+	max-width: var(--prose-width);
 }
 
 .prose h2 {

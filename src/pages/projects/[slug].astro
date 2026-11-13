@@ -41,6 +41,16 @@ const { Content } = await render(project);
 </BaseLayout>
 
 <style>
+	/* Centred reading column inside the wide page container. */
+	article {
+		max-width: var(--article-width);
+		margin-inline: auto;
+	}
+
+	.summary {
+		max-width: var(--prose-width);
+	}
+
 	.head {
 		display: grid;
 		gap: var(--space-2);
