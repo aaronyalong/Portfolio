@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Timeline from '../components/Timeline.astro';
-import { formatYearMonth, getEducation, getExperience, isExpected } from '../lib/content';
+import { getEducation, getExperience } from '../lib/content';
 
 const jobs = await getExperience();
 const degrees = await getEducation();
@@ -17,24 +17,7 @@ const degrees = await getEducation();
 
 	<section aria-labelledby="education-heading">
 		<h2 id="education-heading">Education</h2>
-		<ol class="jobs">
-			{
-				degrees.map((degree) => (
-					<li class="job">
-						<h3>
-							{degree.data.title} <span class="company">· {degree.data.org}</span>
-						</h3>
-						{degree.data.end && (
-							<p class="dates">
-								{isExpected(degree) && 'Expected '}
-								{formatYearMonth(degree.data.end)}
-							</p>
-						)}
-						{degree.data.summary && <p class="body">{degree.data.summary}</p>}
-					</li>
-				))
-			}
-		</ol>
+		<Timeline items={degrees} />
 	</section>
 </BaseLayout>
 
@@ -48,31 +31,6 @@ const degrees = await getEducation();
 	}
 
 	h2 {
-		margin-bottom: var(--space-4);
-	}
-
-	.jobs {
-		display: grid;
-		gap: var(--space-8);
-		padding: 0;
-		list-style: none;
-	}
-
-	.job h3 {
-		font-size: var(--text-lg);
-	}
-
-	.company {
-		font-weight: 400;
-		color: var(--color-text-muted);
-	}
-
-	.dates {
-		color: var(--color-text-muted);
-		font-size: var(--text-sm);
-	}
-
-	.body {
-		margin-block: var(--space-2);
+		margin-bottom: var(--space-6);
 	}
 </style>

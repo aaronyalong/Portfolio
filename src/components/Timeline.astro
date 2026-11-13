@@ -5,8 +5,16 @@
  * other current entries get a solid muted dot, past entries a hollow one.
  * The dot and rail are decorative and hidden from assistive tech.
  */
+import { getEntry } from 'astro:content';
 import TagList from './TagList.astro';
-import { formatYearMonth, isCurrent, isTodo, type TimelineItem } from '../lib/content';
+import {
+	formatYearMonth,
+	isCurrent,
+	isExpected,
+	isTodo,
+	primaryCurrent,
+	type TimelineItem,
+} from '../lib/content';
 
 interface Props {
 	items: TimelineItem[];
@@ -21,25 +29,37 @@ const TYPE_LABELS = {
 	internship: 'Internship',
 } as const;
 
-const leadId = items.find(isCurrent)?.id;
+const leadId = primaryCurrent(items)?.id;
 
-const entries = items.map((item) => {
-	const { start, end, type } = item.data;
-	const current = isCurrent(item);
-	return {
-		item,
-		state: item.id === leadId ? 'lead' : current ? 'current' : 'past',
-		current,
-		typeLabel: type ? TYPE_LABELS[type] : undefined,
-		start,
-		end,
-	};
-});
+const entries = await Promise.all(
+	items.map(async (item) => {
+		const { start, end, type } = item.data;
+		const current = isCurrent(item);
+		const isDegree = item.collection === 'education';
+		// Related projects that have a page to link to.
+		const projects = (await Promise.all(item.data.projects.map((ref) => getEntry(ref)))).filter(
+			(project) => project !== undefined && project.data.caseStudy && !project.data.draft,
+		);
+		return {
+			item,
+			state: item.id === leadId ? 'lead' : current ? 'current' : 'past',
+			// A degree in progress already reads "Expected <date>", so it needs no tag.
+			showCurrentTag: current && !isDegree,
+			typeLabel: type ? TYPE_LABELS[type] : undefined,
+			start,
+			end,
+			// Degrees may give only the end date; a role with no start date is a TODO.
+			startTodo: !start && !isDegree,
+			expected: isExpected(item),
+			projects,
+		};
+	}),
+);
 ---
 
 <ol class="timeline">
 	{
-		entries.map(({ item, state, current, typeLabel, start, end }) => (
+		entries.map(({ item, state, showCurrentTag, typeLabel, start, end, startTodo, expected, projects }) => (
 			<li class="entry" data-state={state}>
 				<span class="dot" aria-hidden="true" />
 				<div class="head">
@@ -51,12 +71,10 @@ const entries = items.map((item) => {
 						</span>
 					</h3>
 					<p class="when">
-						{start ? (
-							<time datetime={start}>{formatYearMonth(start)}</time>
-						) : (
-							<span class="todo">TODO: start</span>
-						)}
-						{' – '}
+						{start && <time datetime={start}>{formatYearMonth(start)}</time>}
+						{startTodo && <span class="todo">TODO: start</span>}
+						{(start || startTodo) && ' – '}
+						{expected && 'Expected '}
 						{end === 'present' ? (
 							'Present'
 						) : end ? (
@@ -66,9 +84,9 @@ const entries = items.map((item) => {
 						)}
 					</p>
 				</div>
-				{(current || typeLabel) && (
+				{(showCurrentTag || typeLabel) && (
 					<p class="meta">
-						{current && <span class="current">Current</span>}
+						{showCurrentTag && <span class="current">Current</span>}
 						{typeLabel}
 					</p>
 				)}
@@ -81,6 +99,29 @@ const entries = items.map((item) => {
 					</ul>
 				)}
 				<TagList items={item.data.stack} />
+				{item.data.coursework.length > 0 && (
+					<p class="detail">
+						<span class="label">Relevant coursework:</span> {item.data.coursework.join(' · ')}
+					</p>
+				)}
+				{projects.length > 0 && (
+					<p class="detail">
+						<span class="label">Projects:</span>{' '}
+						{projects.map((project, i) => (
+							<>
+								{i > 0 && ' · '}
+								<a href={`/projects/${project.id}/`}>{project.data.title}</a>
+							</>
+						))}
+					</p>
+				)}
+				{item.data.links.length > 0 && (
+					<p class="links">
+						{item.data.links.map((link) => (
+							<a href={link.href}>{link.label}</a>
+						))}
+					</p>
+				)}
 			</li>
 		))
 	}
@@ -225,5 +266,20 @@ const entries = items.map((item) => {
 
 	.bullets li::marker {
 		color: var(--color-text-muted);
+	}
+
+	.detail,
+	.links {
+		font-size: var(--text-sm);
+	}
+
+	.label {
+		color: var(--color-text-muted);
+	}
+
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-4);
 	}
 </style>

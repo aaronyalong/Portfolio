@@ -48,6 +48,10 @@ export const isExpected = (item: TimelineItem) =>
 /** A role that ends in `present`, or a degree still in progress. */
 export const isCurrent = (item: TimelineItem) => item.data.end === 'present' || isExpected(item);
 
+/** The primary current entry: the first current one in a sorted list (most recent first).
+ *  Gets the accent dot on the timeline and is the one shown in the home page's "Now" line. */
+export const primaryCurrent = <T extends TimelineItem>(items: T[]): T | undefined => items.find(isCurrent);
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** "2026-03" → "Mar 2026", "2024" → "2024", "present" → "Present". */

@@ -3,16 +3,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Showcase from '../components/Showcase.astro';
 import Interests from '../components/Interests.astro';
 import HeroLinks from '../components/HeroLinks.astro';
-import { getExperience, getProjects } from '../lib/content';
+import { getEducation, getExperience, getProjects, primaryCurrent } from '../lib/content';
 
 const FEATURED_COUNT = 3;
 const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
 
-// "Now" line: current roles come from experience entries that end in `present`.
-const current = (await getExperience())
-	.filter((job) => job.data.end === 'present')
-	.map((job) => `${job.data.title} at ${job.data.org}`);
-const now = [...current, 'M.S. Artificial Intelligence at San José State University'];
+// "Now" line: the primary current role and degree (the ones with the accent dot on /experience).
+const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEducation())]
+	.filter((item) => item !== undefined)
+	.map((item) => `${item.data.title} at ${item.data.org}`);
 ---
 
 <BaseLayout>
