@@ -3,13 +3,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Showcase from '../components/Showcase.astro';
 import Interests from '../components/Interests.astro';
 import HeroLinks from '../components/HeroLinks.astro';
+import Timeline from '../components/Timeline.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getEducation, getExperience, getProjects, primaryCurrent } from '../lib/content';
+import { CONTACT } from '../lib/site';
 
 const FEATURED_COUNT = 3;
-const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
+// Every project appears once: featured ones as showcase tiles, the rest as cards below.
+const more = projects.filter((p) => !featured.includes(p));
 
-// "Now" line: the primary current role and degree (the ones with the accent dot on /experience).
-const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEducation())]
+const jobs = await getExperience();
+const degrees = await getEducation();
+
+// "Now" line: the primary current role and degree (the ones with the accent dot below).
+const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	.filter((item) => item !== undefined)
 	.map((item) => `${item.data.title} at ${item.data.org}`);
 ---
@@ -41,8 +50,40 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 		</div>
 	</section>
 
-	<section aria-labelledby="featured-heading" class="node rise" style="--rise-step: 4">
-		<h2 id="featured-heading">Selected work</h2>
+	<section id="about" aria-labelledby="about-heading" class="node rise" style="--rise-step: 4">
+		<h2 id="about-heading">About</h2>
+		<p class="bio">
+			I'm a software engineer at Intuitive Machines, where I build an agentic AI desktop
+			application on Claude for aerospace engineering teams, and I'm working toward an M.S. in
+			Artificial Intelligence at San José State. I'm drawn to LLM systems that show their work:
+			retrieval that cites its sources, agents that use real tools, and evaluations that check
+			whether any of it actually helps. Before AI, I studied computer science and engineering at
+			UC Irvine, building compilers, processors, and embedded systems.
+		</p>
+		<div class="outdoors">
+			<div class="backdrop" aria-hidden="true">
+				<img src="/images/mount-shasta.webp" alt="" width="2400" height="1600" loading="lazy" />
+			</div>
+			<h3 id="interests-heading">Outside of work</h3>
+			<Interests />
+		</div>
+	</section>
+
+	<section id="experience" aria-labelledby="experience-heading" class="node">
+		<h2 id="experience-heading">Experience</h2>
+		<Timeline items={jobs} />
+	</section>
+
+	<section id="education" aria-labelledby="education-heading" class="node">
+		<h2 id="education-heading">Education</h2>
+		<Timeline items={degrees} />
+	</section>
+
+	<section id="projects" aria-labelledby="projects-heading" class="node">
+		<h2 id="projects-heading">Projects</h2>
+		<p class="lede">
+			Case studies: the problem, the architecture, key decisions, results and limitations.
+		</p>
 		{
 			featured.length < FEATURED_COUNT && (
 				<p class="todo">
@@ -51,15 +92,28 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 			)
 		}
 		{featured.length > 0 && <Showcase projects={featured} />}
-		<p class="all"><a href="/projects/">All projects →</a></p>
+		{
+			more.length > 0 && (
+				<>
+					<h3 class="more-heading">More projects</h3>
+					<ul class="cards">
+						{more.map((project) => (
+							<li>
+								<ProjectCard project={project} as="h4" />
+							</li>
+						))}
+					</ul>
+				</>
+			)
+		}
 	</section>
 
-	<section aria-labelledby="interests-heading" class="node outdoors">
-		<div class="backdrop" aria-hidden="true">
-			<img src="/images/mount-shasta.webp" alt="" width="2400" height="1600" loading="lazy" />
-		</div>
-		<h2 id="interests-heading">Outside of work</h2>
-		<Interests />
+	<section id="contact" aria-labelledby="contact-heading" class="node">
+		<h2 id="contact-heading">Contact</h2>
+		<p class="email">
+			<a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+		</p>
+		<HeroLinks />
 	</section>
 	</div>
 </BaseLayout>
@@ -136,11 +190,21 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 			0 0 28px color-mix(in srgb, var(--color-accent) 45%, transparent);
 	}
 
-	/* "Outside of work": Mount Shasta as a faded full-width backdrop with gentle parallax. */
+	/* About: the bio, then "Outside of work" over Mount Shasta as a faded full-width backdrop
+	   with gentle parallax. The parallax runs on the section's --section view timeline. */
+	.bio {
+		font-size: var(--text-lg);
+	}
+
 	.outdoors {
+		position: relative;
 		isolation: isolate;
-		/* Room below the last branch so it can scroll fully into view (it ends the page). */
-		padding-bottom: var(--space-16);
+		margin-top: var(--space-8);
+		padding-bottom: var(--space-8);
+	}
+
+	.outdoors h3 {
+		margin-bottom: var(--space-4);
 	}
 
 	.backdrop {
@@ -226,11 +290,9 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 		transform-origin: top;
 	}
 
-	/* The last section's segment ends at its last branch (the middle of the last interest pill,
-	   which sits above the section's bottom padding), instead of running on to a next node. */
+	/* The rail ends at the last section's node. */
 	.node:last-child::after {
-		bottom: calc(var(--space-16) + 1.9rem);
-		background: var(--color-accent);
+		display: none;
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
@@ -261,12 +323,6 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 			.node:not(.hero)::after {
 				animation-name: grow-y;
 				animation-range: entry 10% cover 50%;
-			}
-
-			/* The last section ends the page, so it may never reach cover 50%: finish drawing
-			   by the time the whole section has entered the viewport instead. */
-			.node:not(.hero):last-child::after {
-				animation-range: entry 0% entry 100%;
 			}
 		}
 	}
@@ -410,11 +466,31 @@ const now = [primaryCurrent(await getExperience()), primaryCurrent(await getEduc
 		}
 	}
 
-	.all {
-		margin-top: var(--space-4);
-	}
-
 	.hero-links {
 		margin-top: var(--space-6);
+	}
+
+	/* Projects */
+	.lede {
+		margin-bottom: var(--space-6);
+		color: var(--color-text-muted);
+	}
+
+	.more-heading {
+		margin-block: var(--space-8) var(--space-4);
+		font-size: var(--text-lg);
+	}
+
+	.cards {
+		display: grid;
+		gap: var(--space-4);
+		padding: 0;
+		list-style: none;
+	}
+
+	/* Contact */
+	.email {
+		margin-bottom: var(--space-4);
+		font-size: var(--text-lg);
 	}
 </style>

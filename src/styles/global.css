@@ -38,6 +38,15 @@
 	--content-width: 44rem;
 	--gutter: var(--space-4);
 	--radius: 6px;
+	/* Sticky header height; anchor targets scroll to just below it. */
+	--header-h: 3.75rem;
+}
+
+@media (max-width: 47.99rem) {
+	:root {
+		/* Two rows: name, then nav links. */
+		--header-h: 5rem;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,6 +88,11 @@ html {
 	/* Full-bleed decorative layers (100vw includes any scrollbar) must never cause sideways
 	   scroll. Set on html, not body: only the root controls viewport scrolling. */
 	overflow-x: clip;
+}
+
+/* Anchor jumps (nav links, skip link) land below the sticky header, not under it. */
+[id] {
+	scroll-margin-top: calc(var(--header-h) + var(--space-4));
 }
 
 body {
@@ -249,6 +263,11 @@ pre {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+	/* Nav links glide to their section. */
+	html {
+		scroll-behavior: smooth;
+	}
+
 	/* Entrance on page load; stagger with style="--rise-step: N". */
 	.rise {
 		animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;

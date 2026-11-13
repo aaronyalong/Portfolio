@@ -5,7 +5,7 @@ import type { Project } from '../lib/content';
 interface Props {
 	project: Project;
 	/** Heading level, so the card fits the page outline. */
-	as?: 'h2' | 'h3';
+	as?: 'h2' | 'h3' | 'h4';
 }
 
 const { project, as: Heading = 'h3' } = Astro.props;
