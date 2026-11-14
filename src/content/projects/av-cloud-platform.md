@@ -8,6 +8,11 @@ role: "Back-end lead: API, PostgreSQL/MongoDB data layer, alert workflow"
 teamSize: 4
 status: in-progress
 order: 5
+thumbnail:
+  src: /screenshots/av-cloud-platform-dashboard.webp
+  alt: "AV Cloud Platform fleet dashboard: a tenant's vehicle list with online status, and one vehicle's live speed chart, acknowledged pull-over commands and collision events."
+  width: 1200
+  height: 750
 ---
 
 > **In progress.** The team's design is set. So far the multi-tenant data layer and the API
