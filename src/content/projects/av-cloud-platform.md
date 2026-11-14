@@ -5,7 +5,7 @@ stack: [Python, FastAPI, PostgreSQL, MongoDB, SQLAlchemy, Alembic, Docker Compos
 repo: https://github.com/aaronyalong/AV-Cloud-Platform
 context: CMPE 281 team project
 role: "Back-end lead: API, PostgreSQL/MongoDB data layer, alert workflow"
-teamSize: 4
+teamSize: 5
 status: in-progress
 order: 5
 thumbnail:

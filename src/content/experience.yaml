@@ -29,7 +29,7 @@
   logo: ../assets/logos/handshake.png
   type: contract
   start: "2025-01"
-  end: present
+  end: "2025-12"
   summary: LLM output evaluation.
 
 - id: san-diego-fc
