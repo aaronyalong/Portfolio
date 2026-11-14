@@ -1,11 +1,14 @@
 ---
 /**
- * Vertical timeline: a rail on the left with one dot per entry. The first current entry
- * (the list arrives sorted, most recent first) is the "lead" and gets the accent dot;
- * other current entries get a solid muted dot, past entries a hollow one.
- * The dot and rail are decorative and hidden from assistive tech.
+ * Vertical timeline: a rail on the left with one marker per entry: the entry's logo, or a dot
+ * when it has none. The first current entry (the list arrives sorted, most recent first) is
+ * the "lead": accent dot, or an accent ring around its logo. Other current entries get a
+ * solid muted dot or a muted ring; past entries a hollow dot or a hairline border.
+ * Markers and rail are decorative and hidden from assistive tech (the org name is beside
+ * each logo, so the logo's alt is empty).
  */
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import TagList from './TagList.astro';
 import {
 	formatYearMonth,
@@ -30,6 +33,8 @@ const TYPE_LABELS = {
 } as const;
 
 const leadId = primaryCurrent(items)?.id;
+// Logos need a wider marker column than dots; the whole timeline uses the wider one.
+const hasLogos = items.some((item) => item.data.logo);
 
 const entries = await Promise.all(
 	items.map(async (item) => {
@@ -57,11 +62,17 @@ const entries = await Promise.all(
 );
 ---
 
-<ol class="timeline">
+<ol class:list={['timeline', { 'with-logos': hasLogos }]}>
 	{
 		entries.map(({ item, state, showCurrentTag, typeLabel, start, end, startTodo, expected, projects }) => (
 			<li class="entry" data-state={state}>
-				<span class="dot" aria-hidden="true" />
+				{item.data.logo ? (
+					<span class="marker logo" aria-hidden="true">
+						<Image src={item.data.logo} alt="" width={80} height={80} />
+					</span>
+				) : (
+					<span class="marker dot" aria-hidden="true" />
+				)}
 				<div class="head">
 					<h3>
 						<span class:list={{ todo: isTodo(item.data.title) }}>{item.data.title}</span>{' '}
@@ -129,12 +140,14 @@ const entries = await Promise.all(
 
 <style>
 	.timeline {
-		/* Geometry: the dot is centred on the first line of the title. */
+		/* Geometry: each marker is centred on the first line of its title, and horizontally in a
+		   marker column (--col) that the rail runs down the middle of. */
 		--dot: 0.75rem;
+		--logo: 2.5rem;
+		--col: var(--dot);
 		--indent: var(--space-8);
 		--gap: var(--space-8);
 		--title-line: calc(var(--text-lg) * 1.25);
-		--dot-top: calc((var(--title-line) - var(--dot)) / 2);
 		--rail: color-mix(in srgb, var(--color-text-muted) 35%, transparent);
 
 		display: grid;
@@ -153,15 +166,34 @@ const entries = await Promise.all(
 		padding-left: var(--indent);
 	}
 
-	/* ---------- Dot ---------- */
-	.dot {
+	.with-logos {
+		--col: var(--logo);
+		--indent: calc(var(--logo) + var(--space-4));
+	}
+
+	/* Narrow timelines (phones, or a narrow column): slightly smaller logos. */
+	@container timeline (max-width: 24rem) {
+		.with-logos .entry {
+			--logo: 2.25rem;
+			--col: var(--logo);
+			--indent: calc(var(--logo) + var(--space-3));
+		}
+	}
+
+	/* ---------- Marker: a dot or a logo, above the rail ---------- */
+	.marker {
+		--size: var(--dot);
 		position: absolute;
-		top: var(--dot-top);
-		left: 0;
-		width: var(--dot);
-		height: var(--dot);
+		z-index: 1;
+		top: calc((var(--title-line) - var(--size)) / 2);
+		left: calc((var(--col) - var(--size)) / 2);
+		width: var(--size);
+		height: var(--size);
+	}
+
+	.dot {
 		border-radius: 50%;
-		/* Past: hollow. */
+		/* Past: hollow (filled with the page colour so the rail doesn't show through). */
 		background: var(--color-bg);
 		border: 2px solid var(--color-text-muted);
 	}
@@ -178,13 +210,43 @@ const entries = await Promise.all(
 			0 0 14px color-mix(in srgb, var(--color-accent) 60%, transparent);
 	}
 
-	/* ---------- Rail: a segment from each dot down to the next one ---------- */
+	/* Logos bring their own background; they sit in a rounded tile. Past: a hairline border.
+	   Other current roles: a muted ring. The lead: an accent ring with a soft glow. */
+	.logo {
+		--size: var(--logo);
+		overflow: hidden;
+		border-radius: 10px;
+		background: #fff;
+		box-shadow: 0 0 0 1px var(--color-border);
+	}
+
+	.logo :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	[data-state='current'] .logo {
+		box-shadow:
+			0 0 0 2px var(--color-bg),
+			0 0 0 4px var(--color-text-muted);
+	}
+
+	[data-state='lead'] .logo {
+		box-shadow:
+			0 0 0 2px var(--color-bg),
+			0 0 0 4px var(--color-accent),
+			0 0 18px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	}
+
+	/* ---------- Rail: from each marker's centre to the next one's, behind the markers ---------- */
 	.entry:not(:last-child)::after {
 		content: '';
 		position: absolute;
-		top: calc(var(--dot-top) + var(--dot) + 4px);
-		bottom: calc(4px - var(--gap) - var(--dot-top));
-		left: calc(var(--dot) / 2 - 1px);
+		top: calc(var(--title-line) / 2);
+		bottom: calc(-1 * (var(--gap) + var(--title-line) / 2));
+		left: calc(var(--col) / 2 - 1px);
 		width: 2px;
 		border-radius: 2px;
 		background: var(--rail);

@@ -5,6 +5,7 @@
 - id: sjsu-ms-ai
   title: M.S. Artificial Intelligence
   org: San José State University
+  logo: ../assets/logos/sjsu.png
   end: "2027-12"
   coursework:
     - CMPE 259 Natural Language Processing
@@ -14,6 +15,7 @@
 - id: uci-bs-cse
   title: B.S. Computer Science & Engineering
   org: University of California, Irvine
+  logo: ../assets/logos/uci.png
   end: "2024"
   summary: GPA 3.8 · Cum Laude
   coursework: [Compilers, Operating Systems, Computer Architecture]

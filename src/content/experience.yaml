@@ -5,6 +5,7 @@
 - id: intuitive-machines
   title: Junior Software Engineer
   org: Intuitive Machines
+  logo: ../assets/logos/intuitive-machines.png
   type: [contract, part-time]
   start: "2026-04"
   end: present
@@ -16,6 +17,7 @@
 - id: lanteris
   title: Software Engineer Intern
   org: Lanteris Space Systems
+  logo: ../assets/logos/lanteris.png
   type: internship
   start: "2026-03"
   end: "2026-04"
@@ -24,6 +26,7 @@
 - id: handshake-ai
   title: AI Trainer
   org: Handshake AI
+  logo: ../assets/logos/handshake.png
   type: contract
   start: "2025-01"
   end: present
@@ -32,6 +35,7 @@
 - id: san-diego-fc
   title: Retail Associate
   org: San Diego FC
+  logo: ../assets/logos/san-diego-fc.png
   start: "2025-01"
   end: "2025-12"
   summary: Sales Associate on the Retail Team (Stadium & Store).
@@ -39,6 +43,7 @@
 - id: luminexa
   title: Junior Software Developer
   org: Luminexa
+  logo: ../assets/logos/luminexa.png
   start: "2024-08"
   end: "2024-12"
   summary: >-

@@ -1,4 +1,4 @@
-import { defineCollection, reference } from 'astro:content';
+import { defineCollection, reference, type SchemaContext } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
@@ -56,30 +56,36 @@ const employmentType = z.enum(['full-time', 'part-time', 'contract', 'internship
  * One timeline entry: a role (experience) or a degree (education). Quote dates in YAML
  * ("2024"), or a bare year parses as a number and fails validation.
  */
-const timelineEntry = z.object({
-	/** Job title or degree. */
-	title: z.string(),
-	/** Company or school. */
-	org: z.string(),
-	/** Omit when unknown; experience then shows a TODO, education shows the end date only. */
-	start: yearMonth.optional(),
-	/** "present" marks a current role. A degree whose end is after the build date is "Expected". */
-	end: z.union([yearMonth, z.literal('present')]).optional(),
-	/** Shown next to the dates; omit for full-time. A list shows as "Contract · Part-time". */
-	type: z
-		.union([employmentType, z.array(employmentType).min(1)])
-		.transform((value) => (Array.isArray(value) ? value : [value]))
-		.optional(),
-	/** One line. Can be combined with bullets. */
-	summary: z.string().optional(),
-	bullets: z.array(z.string()).max(4).default([]),
-	stack: z.array(z.string()).default([]),
-	/** External links, e.g. a repo. */
-	links: z.array(z.object({ label: z.string(), href: z.url() })).default([]),
-	/** Related projects; only those with a case study are rendered as links. */
-	projects: z.array(reference('projects')).default([]),
-	coursework: z.array(z.string()).default([]),
-});
+const timelineEntry = ({ image }: SchemaContext) =>
+	z.object({
+		/** Job title or degree. */
+		title: z.string(),
+		/** Company or school. */
+		org: z.string(),
+		/** Omit when unknown; experience then shows a TODO, education shows the end date only. */
+		start: yearMonth.optional(),
+		/** "present" marks a current role. A degree whose end is after the build date is "Expected". */
+		end: z.union([yearMonth, z.literal('present')]).optional(),
+		/** Shown next to the dates; omit for full-time. A list shows as "Contract · Part-time". */
+		type: z
+			.union([employmentType, z.array(employmentType).min(1)])
+			.transform((value) => (Array.isArray(value) ? value : [value]))
+			.optional(),
+		/** One line. Can be combined with bullets. */
+		summary: z.string().optional(),
+		bullets: z.array(z.string()).max(4).default([]),
+		stack: z.array(z.string()).default([]),
+		/** External links, e.g. a repo. */
+		links: z.array(z.object({ label: z.string(), href: z.url() })).default([]),
+		/** Related projects; only those with a case study are rendered as links. */
+		projects: z.array(reference('projects')).default([]),
+		coursework: z.array(z.string()).default([]),
+		/**
+		 * Square logo in src/assets/logos/, as a path relative to the YAML file
+		 * ("../assets/logos/x.png"). Shown in place of the timeline dot; without one, the dot.
+		 */
+		logo: image().optional(),
+	});
 
 const experience = defineCollection({
 	loader: file('./src/content/experience.yaml'),
