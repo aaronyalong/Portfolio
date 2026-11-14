@@ -4,6 +4,7 @@ import Interests from '../components/Interests.astro';
 import HeroLinks from '../components/HeroLinks.astro';
 import Timeline from '../components/Timeline.astro';
 import ProjectTile from '../components/ProjectTile.astro';
+import RailPacket from '../components/RailPacket.astro';
 import { getEducation, getExperience, getProjects, primaryCurrent } from '../lib/content';
 import { CONTACT } from '../lib/site';
 import { Image } from 'astro:assets';
@@ -51,6 +52,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 				<HeroLinks />
 			</div>
 		</div>
+		<RailPacket />
 	</section>
 
 	<section id="about" aria-labelledby="about-heading" class="node rise about" style="--rise-step: 3">
@@ -63,6 +65,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 			whether any of it actually helps. Before AI, I studied computer science and engineering at
 			UC Irvine, building compilers, processors, and embedded systems.
 		</p>
+		<RailPacket />
 	</section>
 	</div>
 
@@ -70,12 +73,15 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		<section id="experience" aria-labelledby="experience-heading" class="node">
 			<h2 id="experience-heading">Experience</h2>
 			<Timeline items={jobs} />
+			<RailPacket />
 		</section>
 
 		<section id="education" aria-labelledby="education-heading" class="node">
 			<h2 id="education-heading">Education</h2>
 			<Timeline items={degrees} />
+			<RailPacket />
 		</section>
+		<RailPacket />
 	</div>
 
 	<section id="projects" aria-labelledby="projects-heading" class="node">
@@ -92,6 +98,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 				))
 			}
 		</ul>
+		<RailPacket />
 	</section>
 
 	<section id="interests" aria-labelledby="interests-heading" class="node interests">
@@ -125,6 +132,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 				)
 			}
 		</div>
+		<RailPacket />
 	</section>
 
 	<section id="contact" aria-labelledby="contact-heading" class="node">
@@ -305,7 +313,8 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	}
 
 	.career::before,
-	.career::after {
+	.career::after,
+	.career > :global(.packet-track) {
 		display: none;
 	}
 
@@ -316,14 +325,21 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		}
 
 		.career::before,
-		.career::after {
+		.career::after,
+		.career > :global(.packet-track) {
 			display: block;
 		}
 
 		.career > .node::before,
-		.career > .node::after {
+		.career > .node::after,
+		.career > .node > :global(.packet-track) {
 			display: none;
 		}
+	}
+
+	/* The data packet (RailPacket) runs into the band's lower node, past its top padding. */
+	.graph > .node:has(+ .interests) {
+		--packet-extra: var(--band-pad);
 	}
 
 	@media (prefers-reduced-motion: no-preference) {

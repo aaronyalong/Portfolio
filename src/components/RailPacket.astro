@@ -1,0 +1,83 @@
+---
+/**
+ * "Data packet": a short glowing pulse that runs down the home page rail, through the gap
+ * below a section, and flashes as it reaches the next section's node.
+ *
+ * Scroll-driven, so it plays as you scroll that gap past the middle of the screen and runs
+ * backwards if you scroll back up; it never loops on its own (pure CSS can't remember that
+ * it already played). It only animates where CSS scroll-driven animations are supported and
+ * reduced motion is off; anywhere else it stays invisible and the rail is unchanged.
+ *
+ * Decorative (aria-hidden). Place it inside a rail node; see `.node` in src/pages/index.astro,
+ * which provides --rail, --section-gap, --heading-mid and, when the next node sits lower than
+ * usual, --packet-extra.
+ */
+---
+
+<span class="packet-track" aria-hidden="true"><span class="packet"></span></span>
+
+<style>
+	/* From this section's bottom edge to the centre of the next node, on the rail. */
+	.packet-track {
+		position: absolute;
+		z-index: 1;
+		top: 100%;
+		left: var(--rail);
+		width: 1px;
+		height: calc(var(--section-gap) + var(--packet-extra, 0px) + var(--heading-mid));
+		pointer-events: none;
+		view-timeline: --packet block;
+	}
+
+	.packet {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--color-accent) 45%, #fff);
+		box-shadow:
+			0 0 6px 2px color-mix(in srgb, var(--color-accent) 85%, transparent),
+			0 0 18px 4px color-mix(in srgb, var(--color-accent) 45%, transparent);
+		/* Hidden unless the animation below runs. */
+		opacity: 0;
+		transform: translate(-50%, -50%);
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		@supports (animation-timeline: view()) {
+			/* Longhands only; see the note on .reveal in global.css. */
+			.packet {
+				animation-name: packet;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: --packet;
+				/* A short stretch of scrolling while the gap crosses mid-screen. */
+				animation-range: cover 30% cover 62%;
+			}
+		}
+	}
+
+	/* Fade in, run down the rail, then flash and fade on the next node. */
+	@keyframes packet {
+		0% {
+			top: 0%;
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(1);
+		}
+		12% {
+			opacity: 1;
+		}
+		78% {
+			top: 100%;
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+		}
+		100% {
+			top: 100%;
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(3.2);
+		}
+	}
+</style>
