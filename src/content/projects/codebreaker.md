@@ -5,4 +5,5 @@ stack: [TypeScript, Vite, Vitest, GitHub Actions]
 repo: https://github.com/aaronyalong/CodeBreaker
 play: https://aaronyalong.github.io/CodeBreaker/
 caseStudy: false
+order: 4
 ---

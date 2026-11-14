@@ -1,0 +1,245 @@
+---
+/**
+ * One project in the home page grid: thumbnail (or an initial placeholder in the same 16:10
+ * box), title, summary, headline result, up to four tags, and links.
+ *
+ * With a case study, the whole tile is clickable: the title is the real link and stretches
+ * over the tile, so screen readers hear a short link name ("Oracle") instead of the whole
+ * tile's text. Without one, the tile shows its Repository / Play links instead.
+ */
+import TagList from './TagList.astro';
+import type { Project } from '../lib/content';
+
+interface Props {
+	project: Project;
+}
+
+const { project } = Astro.props;
+const { title, summary, highlight, thumbnail, caseStudy, stack, repo, play } = project.data;
+const href = caseStudy ? `/projects/${project.id}/` : undefined;
+const MAX_TAGS = 4;
+---
+
+<article class="tile reveal" data-spotlight data-linked={href ? '' : undefined}>
+	{
+		thumbnail ? (
+			<div class:list={['thumb', { diagram: thumbnail.src.endsWith('.svg') }]}>
+				<picture>
+					{thumbnail.dark && <source srcset={thumbnail.dark} media="(prefers-color-scheme: dark)" />}
+					<img
+						src={thumbnail.src}
+						alt={thumbnail.alt}
+						width={thumbnail.width}
+						height={thumbnail.height}
+						loading="lazy"
+						decoding="async"
+					/>
+				</picture>
+			</div>
+		) : (
+			<div class="thumb placeholder" aria-hidden="true">
+				<span>{title.charAt(0)}</span>
+			</div>
+		)
+	}
+	<div class="body">
+		<h3 class="title">{href ? <a class="stretched" href={href}>{title}</a> : title}</h3>
+		<p class="summary">{summary}</p>
+		{
+			highlight && (
+				<p class="stat">
+					<span class="value">{highlight.value}</span>
+					<span class="label">{highlight.label}</span>
+				</p>
+			)
+		}
+		<TagList items={stack} max={MAX_TAGS} />
+		<p class="links">
+			{
+				href ? (
+					<span class="more" aria-hidden="true">
+						Read case study <span class="arrow">→</span>
+					</span>
+				) : (
+					<>
+						{repo && <a href={repo}>Repository</a>}
+						{play && <a href={play}>Play in browser</a>}
+					</>
+				)
+			}
+		</p>
+	</div>
+</article>
+
+<style>
+	.tile {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		overflow: hidden;
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: calc(var(--radius) * 2);
+		transition:
+			transform 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.tile[data-linked]:hover,
+	.tile:has(.stretched:focus-visible) {
+		border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+		box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+
+	/* Keyboard focus: ring the whole tile, not just the title text. */
+	.tile:has(.stretched:focus-visible) {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	.stretched:focus-visible {
+		outline: none;
+	}
+
+	/* ---------- Thumbnail: a fixed 16:10 box, so nothing shifts when images load ---------- */
+	.thumb {
+		position: relative;
+		flex: none;
+		overflow: hidden;
+		aspect-ratio: 16 / 10;
+		background: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg));
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.thumb img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+		transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
+	/* Diagrams are shown whole, not cropped. */
+	.thumb.diagram img {
+		object-fit: contain;
+		object-position: center;
+		padding: var(--space-4);
+	}
+
+	/* No image yet: the project's initial over the hero's dot grid, in the same box. */
+	.placeholder {
+		display: grid;
+		place-items: center;
+		background-image: radial-gradient(
+			circle at 1px 1px,
+			color-mix(in srgb, var(--color-text) 16%, transparent) 1px,
+			transparent 0
+		);
+		background-size: 18px 18px;
+	}
+
+	.placeholder span {
+		display: grid;
+		place-items: center;
+		width: 5.5rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent);
+		color: var(--color-accent);
+		font-size: 2.75rem;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	/* ---------- Text ---------- */
+	.body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: var(--space-3);
+		padding: var(--space-4) var(--space-6) var(--space-6);
+	}
+
+	.title {
+		font-size: var(--text-xl);
+	}
+
+	.title a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	/* The title link covers the whole tile. */
+	.stretched::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.summary {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.stat {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+	}
+
+	.value {
+		flex: none;
+		color: var(--color-accent);
+		font-size: 2rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+
+	.label {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+		line-height: 1.4;
+	}
+
+	/* Links sit on the tile's bottom edge, so tiles of different lengths line up. */
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-4);
+		margin-top: auto;
+		padding-top: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.more {
+		color: var(--color-accent);
+	}
+
+	.arrow {
+		display: inline-block;
+		transition: transform 0.2s ease;
+	}
+
+	@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+		.tile[data-linked]:hover {
+			transform: translateY(-3px);
+		}
+
+		.tile[data-linked]:hover .thumb img {
+			transform: scale(1.04);
+		}
+
+		.tile[data-linked]:hover .arrow {
+			transform: translateX(4px);
+		}
+	}
+</style>

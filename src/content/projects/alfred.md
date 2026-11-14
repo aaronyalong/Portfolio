@@ -4,7 +4,6 @@ summary: Turns course files (PDF, PPTX, DOCX) into practice questions, each citi
 stack: [Python, Pydantic, Claude API, pypdfium2, python-pptx, python-docx]
 repo: https://github.com/aaronyalong/alfred
 status: in-progress
-featured: true
 order: 3
 highlight:
   value: 37/37

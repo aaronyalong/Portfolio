@@ -4,15 +4,25 @@ interface Props {
 	items: string[];
 	/** Accessible name for the list. */
 	label?: string;
+	/** Show at most this many, then a "+N" tag for the rest. */
+	max?: number;
 }
 
-const { items, label = 'Tech stack' } = Astro.props;
+const { items, label = 'Tech stack', max } = Astro.props;
+const shown = max ? items.slice(0, max) : items;
+const rest = items.length - shown.length;
 ---
 
 {
 	items.length > 0 && (
 		<ul class="tags" aria-label={label}>
-			{items.map((item) => <li>{item}</li>)}
+			{shown.map((item) => <li>{item}</li>)}
+			{rest > 0 && (
+				<li class="rest">
+					<span aria-hidden="true">+{rest}</span>
+					<span class="visually-hidden">and {rest} more</span>
+				</li>
+			)}
 		</ul>
 	)
 }
@@ -33,5 +43,9 @@ const { items, label = 'Tech stack' } = Astro.props;
 		color: var(--color-text-muted);
 		font-family: var(--font-mono);
 		font-size: var(--text-sm);
+	}
+
+	.tags .rest {
+		border-style: dashed;
 	}
 </style>

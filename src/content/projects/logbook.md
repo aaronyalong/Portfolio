@@ -4,7 +4,6 @@ summary: Grounded Q&A over 3,080 NASA aviation maintenance safety reports, with 
 stack: [Python, DuckDB, BM25, fastembed, Claude API, Ollama, Streamlit]
 repo: https://github.com/aaronyalong/logbook
 context: CMPE 259 project
-featured: true
 order: 2
 highlight:
   value: 22/22

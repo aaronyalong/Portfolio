@@ -26,11 +26,14 @@ const projects = defineCollection({
 		teamSize: z.number().int().positive().optional(),
 		/** Omit when unknown rather than guessing. */
 		status: z.enum(['in-progress', 'complete']).optional(),
-		/** Shown on the home page (pick 3). */
-		featured: z.boolean().default(false),
-		/** Home showcase: one headline result, taken from the case study (never invented). */
+		/** Project tile: one headline result, taken from the case study (never invented). */
 		highlight: z.object({ value: z.string(), label: z.string() }).optional(),
-		/** Home showcase image: a path under public/, an optional dark-mode variant, alt text. */
+		/**
+		 * Project tile image: a path under public/, an optional dark-mode variant, alt text.
+		 * Shown in a 16:10 box: screenshots are cropped from the top, SVG diagrams shown whole.
+		 * New screenshots: 1200×750 WebP in public/screenshots/. Without one, the tile shows
+		 * a placeholder with the project's initial.
+		 */
 		thumbnail: z
 			.object({
 				src: z.string().startsWith('/'),
@@ -40,7 +43,7 @@ const projects = defineCollection({
 				height: z.number().int().positive(),
 			})
 			.optional(),
-		/** Lower sorts first; unordered entries sort last, by title. */
+		/** Position in the home page's project grid: lower first; unordered last, by title. */
 		order: z.number().int().optional(),
 		draft: z.boolean().default(false),
 	}),

@@ -7,6 +7,7 @@ context: CMPE 281 team project
 role: "Back-end lead: API, PostgreSQL/MongoDB data layer, alert workflow"
 teamSize: 4
 status: in-progress
+order: 5
 ---
 
 > **In progress.** The team's design is set. So far the multi-tenant data layer and the API

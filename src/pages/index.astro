@@ -1,18 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Showcase from '../components/Showcase.astro';
 import Interests from '../components/Interests.astro';
 import HeroLinks from '../components/HeroLinks.astro';
 import Timeline from '../components/Timeline.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import ProjectTile from '../components/ProjectTile.astro';
 import { getEducation, getExperience, getProjects, primaryCurrent } from '../lib/content';
 import { CONTACT } from '../lib/site';
 
-const FEATURED_COUNT = 3;
+// All projects, in their `order` (see content.config.ts).
 const projects = await getProjects();
-const featured = projects.filter((p) => p.data.featured).slice(0, FEATURED_COUNT);
-// Every project appears once: featured ones as showcase tiles, the rest as cards below.
-const more = projects.filter((p) => !featured.includes(p));
 
 const jobs = await getExperience();
 const degrees = await getEducation();
@@ -92,28 +88,15 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		<p class="lede">
 			Case studies: the problem, the architecture, key decisions, results and limitations.
 		</p>
-		{
-			featured.length < FEATURED_COUNT && (
-				<p class="todo">
-					TODO: set `featured: true` on {FEATURED_COUNT} projects ({featured.length} set)
-				</p>
-			)
-		}
-		{featured.length > 0 && <Showcase projects={featured} />}
-		{
-			more.length > 0 && (
-				<>
-					<h3 class="more-heading">More projects</h3>
-					<ul class="cards">
-						{more.map((project) => (
-							<li>
-								<ProjectCard project={project} as="h4" />
-							</li>
-						))}
-					</ul>
-				</>
-			)
-		}
+		<ul class="tiles">
+			{
+				projects.map((project) => (
+					<li>
+						<ProjectTile project={project} />
+					</li>
+				))
+			}
+		</ul>
 	</section>
 
 	<section id="contact" aria-labelledby="contact-heading" class="node">
@@ -583,16 +566,26 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		color: var(--color-text-muted);
 	}
 
-	.more-heading {
-		margin-block: var(--space-8) var(--space-4);
-		font-size: var(--text-lg);
-	}
-
-	.cards {
+	/* One grid for every project: 1 column, 2 from 640px, 3 from 1100px. Rows stretch, and
+	   each tile fills its cell, so tiles in a row share a height. */
+	.tiles {
 		display: grid;
-		gap: var(--space-4);
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--space-6);
 		padding: 0;
 		list-style: none;
+	}
+
+	@media (min-width: 40rem) {
+		.tiles {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 68.75rem) {
+		.tiles {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	/* Contact: a short line and the email on the left, the link buttons on the right. */
