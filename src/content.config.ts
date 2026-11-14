@@ -73,6 +73,10 @@ const timelineEntry = ({ image }: SchemaContext) =>
 			.optional(),
 		/** One line. Can be combined with bullets. */
 		summary: z.string().optional(),
+		/**
+		 * Up to 4. Supports **bold** (e.g. a "**Lead-in:** rest" bullet) and [text](url) links;
+		 * see src/lib/inline-markdown.ts.
+		 */
 		bullets: z.array(z.string()).max(4).default([]),
 		stack: z.array(z.string()).default([]),
 		/** External links, e.g. a repo. */

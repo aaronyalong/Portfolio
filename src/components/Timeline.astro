@@ -10,6 +10,7 @@
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import TagList from './TagList.astro';
+import { inlineMarkdown } from '../lib/inline-markdown';
 import {
 	formatYearMonth,
 	isCurrent,
@@ -105,7 +106,7 @@ const entries = await Promise.all(
 				{item.data.bullets.length > 0 && (
 					<ul class="bullets">
 						{item.data.bullets.map((bullet) => (
-							<li>{bullet}</li>
+							<li set:html={inlineMarkdown(bullet)} />
 						))}
 					</ul>
 				)}
@@ -336,6 +337,12 @@ const entries = await Promise.all(
 
 	.bullets li::marker {
 		color: var(--color-text-muted);
+	}
+
+	/* "**Lead-in:** rest" bullets: the lead-in stands out in full-strength text. */
+	.bullets :global(strong) {
+		color: var(--color-text);
+		font-weight: 650;
 	}
 
 	.detail,
