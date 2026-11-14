@@ -1,7 +1,7 @@
 // Cloudflare Workers with static assets: serves the static Astro build from dist/.
 // No Worker code (no "main") and no Astro adapter are needed for a fully static site.
-// Cloudflare builds with `npm run build:deploy` (fails on visible TODOs) and then runs
-// `npx wrangler deploy`.
+// Cloudflare builds with `npm run build:deploy` (fails on visible TODOs or broken internal
+// links) and then runs `npx wrangler deploy`.
 {
 	"name": "portfolio",
 	"compatibility_date": "2026-11-09",

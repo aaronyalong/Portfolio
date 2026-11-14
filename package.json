@@ -12,7 +12,8 @@
     "astro": "astro",
     "diagrams": "node scripts/diagrams.mjs",
     "check:todos": "node scripts/check-todos.mjs",
-    "build:deploy": "astro build && node scripts/check-todos.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "build:deploy": "astro build && node scripts/check-todos.mjs && node scripts/check-links.mjs"
   },
   "dependencies": {
     "astro": "^7.4.7"

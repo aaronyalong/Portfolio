@@ -56,10 +56,6 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 			whether any of it actually helps. Before AI, I studied computer science and engineering at
 			UC Irvine, building compilers, processors, and embedded systems.
 		</p>
-		<div class="outdoors">
-			<h3 id="interests-heading">Outside of work</h3>
-			<Interests />
-		</div>
 		<div class="shasta">
 			<img
 				src="/images/mount-shasta.webp"
@@ -97,6 +93,11 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 				))
 			}
 		</ul>
+	</section>
+
+	<section id="interests" aria-labelledby="interests-heading" class="node">
+		<h2 id="interests-heading">Outside of work</h2>
+		<Interests />
 	</section>
 
 	<section id="contact" aria-labelledby="contact-heading" class="node">
@@ -222,10 +223,9 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	}
 
 	/*
-	 * About: bio and "Outside of work" on the left, Mount Shasta framed on the right (from
-	 * 900px). Narrower: one column, the photo last. The h2 spans both columns so its rail node
-	 * stays beside it. The photo drifts gently inside its frame on the section's --section
-	 * view timeline.
+	 * About: bio on the left, Mount Shasta framed on the right (from 900px). Narrower: one
+	 * column, the photo last. The h2 spans both columns so its rail node stays beside it. The
+	 * photo drifts gently inside its frame on the section's --section view timeline.
 	 */
 	.about {
 		display: grid;
@@ -236,14 +236,6 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	.bio {
 		max-width: var(--prose-width);
 		font-size: var(--text-lg);
-	}
-
-	.outdoors {
-		margin-top: var(--space-8);
-	}
-
-	.outdoors h3 {
-		margin-bottom: var(--space-4);
 	}
 
 	.shasta {
@@ -260,22 +252,20 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	@media (min-width: 56.25rem) {
 		.about {
 			grid-template-columns: 7fr 5fr;
-			/* Rows: heading, bio, interests. The photo fills the bio and interests rows. */
-			grid-template-rows: auto auto 1fr;
+			grid-template-rows: auto 1fr;
 		}
 
 		.about h2 {
 			grid-column: 1 / -1;
 		}
 
-		.bio,
-		.outdoors {
+		.bio {
 			grid-column: 1;
 		}
 
 		.shasta {
 			grid-column: 2;
-			grid-row: 2 / 4;
+			grid-row: 2;
 			align-self: start;
 			max-width: none;
 			margin-top: 0;
