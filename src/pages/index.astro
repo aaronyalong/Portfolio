@@ -75,15 +75,17 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		</div>
 	</section>
 
-	<section id="experience" aria-labelledby="experience-heading" class="node">
-		<h2 id="experience-heading">Experience</h2>
-		<Timeline items={jobs} />
-	</section>
+	<div class="career node">
+		<section id="experience" aria-labelledby="experience-heading" class="node">
+			<h2 id="experience-heading">Experience</h2>
+			<Timeline items={jobs} />
+		</section>
 
-	<section id="education" aria-labelledby="education-heading" class="node">
-		<h2 id="education-heading">Education</h2>
-		<Timeline items={degrees} />
-	</section>
+		<section id="education" aria-labelledby="education-heading" class="node">
+			<h2 id="education-heading">Education</h2>
+			<Timeline items={degrees} />
+		</section>
+	</div>
 
 	<section id="projects" aria-labelledby="projects-heading" class="node">
 		<h2 id="projects-heading">Projects</h2>
@@ -133,7 +135,9 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 </BaseLayout>
 
 <style>
-	section + section {
+	/* Sections (and the Experience + Education wrapper) are spaced evenly; the rail segments
+	   below rely on this gap. */
+	.graph > * + * {
 		margin-top: var(--space-12);
 	}
 
@@ -361,8 +365,41 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	}
 
 	/* The rail ends at the last section's node. */
-	.node:last-child::after {
+	.graph > .node:last-child::after {
 		display: none;
+	}
+
+	/*
+	 * Experience + Education. Stacked: each section is its own node, the same gap apart as any
+	 * two sections, and the wrapper draws nothing. From 1000px they sit side by side (60/40):
+	 * the wrapper becomes the node instead (its dot beside "Experience", its segment on to
+	 * Projects), and the two sections draw nothing.
+	 */
+	.career {
+		display: grid;
+		row-gap: var(--space-12);
+	}
+
+	.career::before,
+	.career::after {
+		display: none;
+	}
+
+	@media (min-width: 62.5rem) {
+		.career {
+			grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+			column-gap: var(--space-12);
+		}
+
+		.career::before,
+		.career::after {
+			display: block;
+		}
+
+		.career > .node::before,
+		.career > .node::after {
+			display: none;
+		}
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
