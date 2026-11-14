@@ -85,6 +85,8 @@ const timelineEntry = ({ image }: SchemaContext) =>
 		 * ("../assets/logos/x.png"). Shown in place of the timeline dot; without one, the dot.
 		 */
 		logo: image().optional(),
+		/** Keep the entry in the data but leave it off the site. */
+		hidden: z.boolean().default(false),
 	});
 
 const experience = defineCollection({

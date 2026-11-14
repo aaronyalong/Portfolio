@@ -19,13 +19,13 @@ export async function getProjects(): Promise<Project[]> {
 
 /** Roles, most recent start first; roles with no start date last. */
 export async function getExperience(): Promise<Job[]> {
-	const jobs = await getCollection('experience');
+	const jobs = await getCollection('experience', ({ data }) => !data.hidden);
 	return jobs.sort((a, b) => byDateDesc(a.data.start, b.data.start) || a.data.org.localeCompare(b.data.org));
 }
 
 /** Degrees, most recent end first; degrees with no end date last. */
 export async function getEducation(): Promise<Degree[]> {
-	const degrees = await getCollection('education');
+	const degrees = await getCollection('education', ({ data }) => !data.hidden);
 	return degrees.sort((a, b) => byDateDesc(a.data.end, b.data.end) || a.data.org.localeCompare(b.data.org));
 }
 

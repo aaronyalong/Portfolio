@@ -36,6 +36,7 @@
   title: Retail Associate
   org: San Diego FC
   logo: ../assets/logos/san-diego-fc.png
+  hidden: true
   start: "2025-01"
   end: "2025-12"
   summary: Sales Associate on the Retail Team (Stadium & Store).
