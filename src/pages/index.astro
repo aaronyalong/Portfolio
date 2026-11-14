@@ -50,7 +50,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		</div>
 	</section>
 
-	<section id="about" aria-labelledby="about-heading" class="node rise" style="--rise-step: 4">
+	<section id="about" aria-labelledby="about-heading" class="node rise about" style="--rise-step: 4">
 		<h2 id="about-heading">About</h2>
 		<p class="bio">
 			I'm a software engineer at Intuitive Machines, where I build an agentic AI desktop
@@ -61,11 +61,17 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 			UC Irvine, building compilers, processors, and embedded systems.
 		</p>
 		<div class="outdoors">
-			<div class="backdrop" aria-hidden="true">
-				<img src="/images/mount-shasta.webp" alt="" width="2400" height="1600" loading="lazy" />
-			</div>
 			<h3 id="interests-heading">Outside of work</h3>
 			<Interests />
+		</div>
+		<div class="shasta">
+			<img
+				src="/images/mount-shasta.webp"
+				alt="Snow-covered Mount Shasta"
+				width="2400"
+				height="1600"
+				loading="lazy"
+			/>
 		</div>
 	</section>
 
@@ -228,56 +234,80 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		}
 	}
 
-	/* About: the bio, then "Outside of work" over Mount Shasta as a faded full-width backdrop
-	   with gentle parallax. The parallax runs on the section's --section view timeline. */
+	/*
+	 * About: bio and "Outside of work" on the left, Mount Shasta framed on the right (from
+	 * 900px). Narrower: one column, the photo last. The h2 spans both columns so its rail node
+	 * stays beside it. The photo drifts gently inside its frame on the section's --section
+	 * view timeline.
+	 */
+	.about {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		column-gap: var(--space-12);
+	}
+
 	.bio {
 		max-width: var(--prose-width);
 		font-size: var(--text-lg);
 	}
 
 	.outdoors {
-		position: relative;
-		isolation: isolate;
 		margin-top: var(--space-8);
-		padding-bottom: var(--space-8);
 	}
 
 	.outdoors h3 {
 		margin-bottom: var(--space-4);
 	}
 
-	.backdrop {
-		position: absolute;
-		z-index: -1;
-		top: calc(-1 * var(--space-12));
-		bottom: calc(-1 * var(--space-8));
-		left: calc(50% - var(--graph-pad, 0px) / 2);
-		width: 100vw;
-		transform: translateX(-50%);
+	.shasta {
+		/* Stacked: no wider than the text above it, so it doesn't dominate on tablets. */
+		max-width: 40rem;
+		margin-top: var(--space-8);
+		aspect-ratio: 3 / 2;
 		overflow: hidden;
-		opacity: 0.6;
-		mask-image: linear-gradient(to bottom, transparent, black 22%, black 72%, transparent);
+		border: 1px solid var(--color-border);
+		border-radius: calc(var(--radius) * 2);
+		background-color: var(--color-surface);
 	}
 
-	.backdrop img {
+	@media (min-width: 56.25rem) {
+		.about {
+			grid-template-columns: 7fr 5fr;
+			/* Rows: heading, bio, interests. The photo fills the bio and interests rows. */
+			grid-template-rows: auto auto 1fr;
+		}
+
+		.about h2 {
+			grid-column: 1 / -1;
+		}
+
+		.bio,
+		.outdoors {
+			grid-column: 1;
+		}
+
+		.shasta {
+			grid-column: 2;
+			grid-row: 2 / 4;
+			align-self: start;
+			max-width: none;
+			margin-top: 0;
+			aspect-ratio: 4 / 5;
+		}
+	}
+
+	.shasta img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		object-position: 50% 40%;
-		filter: saturate(1.15);
 		transform: scale(1.12);
-	}
-
-	@media (prefers-color-scheme: light) {
-		.backdrop {
-			opacity: 0.4;
-		}
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
 		@supports (animation-timeline: view()) {
 			/* Longhands only; see the note in Interests.astro. */
-			.backdrop img {
+			.shasta img {
 				animation-name: parallax;
 				animation-timing-function: linear;
 				animation-fill-mode: both;
@@ -287,12 +317,13 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		}
 	}
 
+	/* ±5% stays inside the 6% of overflow that scale(1.12) leaves on each edge. */
 	@keyframes parallax {
 		from {
-			transform: translateY(-7%) scale(1.12);
+			transform: translateY(-5%) scale(1.12);
 		}
 		to {
-			transform: translateY(7%) scale(1.12);
+			transform: translateY(5%) scale(1.12);
 		}
 	}
 
