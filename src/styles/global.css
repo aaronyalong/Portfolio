@@ -13,6 +13,16 @@
 	/* How much accent goes into decorative glows. */
 	--glow-mix: 32%;
 
+	/* The dark palette, declared once: dark mode uses it for the page, and .on-dark for
+	   blocks that are dark in both themes (the Outside of work band). */
+	--dark-bg: #121214;
+	--dark-surface: #1a1a1d;
+	--dark-text: #ececef;
+	--dark-text-muted: #a0a0aa;
+	--dark-border: #2c2c31;
+	--dark-accent: #8aa8ff;
+	--dark-accent-hover: #b0c4ff;
+
 	/* Typography */
 	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
@@ -55,15 +65,28 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--color-bg: #121214;
-		--color-surface: #1a1a1d;
-		--color-text: #ececef;
-		--color-text-muted: #a0a0aa;
-		--color-border: #2c2c31;
-		--color-accent: #8aa8ff;
-		--color-accent-hover: #b0c4ff;
 		--glow-mix: 50%;
+		--color-bg: var(--dark-bg);
+		--color-surface: var(--dark-surface);
+		--color-text: var(--dark-text);
+		--color-text-muted: var(--dark-text-muted);
+		--color-border: var(--dark-border);
+		--color-accent: var(--dark-accent);
+		--color-accent-hover: var(--dark-accent-hover);
 	}
+}
+
+/* A block that is dark in both themes: everything inside uses the dark palette. */
+.on-dark {
+	--color-bg: var(--dark-bg);
+	--color-surface: var(--dark-surface);
+	--color-text: var(--dark-text);
+	--color-text-muted: var(--dark-text-muted);
+	--color-border: var(--dark-border);
+	--color-accent: var(--dark-accent);
+	--color-accent-hover: var(--dark-accent-hover);
+	color: var(--color-text);
+	color-scheme: dark;
 }
 
 /* ---------- Light reset ---------- */

@@ -6,6 +6,16 @@ import Timeline from '../components/Timeline.astro';
 import ProjectTile from '../components/ProjectTile.astro';
 import { getEducation, getExperience, getProjects, primaryCurrent } from '../lib/content';
 import { CONTACT } from '../lib/site';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import shasta from '../assets/images/mount-shasta.webp';
+
+/**
+ * Optional small candid photo in the Outside of work band: right of the pills, or below them
+ * on phones. To add one, put the file in src/assets/images/, import it above, and set
+ * `{ src: theImport, alt: 'What the photo shows' }`. Undefined shows the pills alone.
+ */
+const candid = undefined as { src: ImageMetadata; alt: string } | undefined;
 
 // All projects, in their `order` (see content.config.ts).
 const projects = await getProjects();
@@ -58,7 +68,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		</p>
 		<div class="shasta">
 			<img
-				src="/images/mount-shasta.webp"
+				src={shasta.src}
 				alt="Snow-covered Mount Shasta"
 				width="2400"
 				height="1600"
@@ -95,9 +105,35 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		</ul>
 	</section>
 
-	<section id="interests" aria-labelledby="interests-heading" class="node">
-		<h2 id="interests-heading">Outside of work</h2>
-		<Interests />
+	<section id="interests" aria-labelledby="interests-heading" class="node interests">
+		<div class="band-bg" aria-hidden="true">
+			<Image
+				src={shasta}
+				alt=""
+				widths={[640, 960, 1280, 1920]}
+				sizes="100vw"
+				loading="lazy"
+				decoding="async"
+			/>
+		</div>
+		<div class:list={['band', 'on-dark', { 'with-candid': candid }]}>
+			<div>
+				<h2 id="interests-heading">Outside of work</h2>
+				<Interests />
+			</div>
+			{
+				candid && (
+					<Image
+						class="candid"
+						src={candid.src}
+						alt={candid.alt}
+						widths={[320, 640]}
+						sizes="13rem"
+						loading="lazy"
+					/>
+				)
+			}
+		</div>
 	</section>
 
 	<section id="contact" aria-labelledby="contact-heading" class="node">
@@ -139,13 +175,14 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	/*
 	 * Graph rail: a glowing line down the page linking every section, with a node beside each
 	 * heading. --rail is the line's x offset from the content's left edge: in the left margin on
-	 * wide screens, inside a small left padding on narrow ones. Interests.astro reads it too.
+	 * wide screens, inside a small left padding on narrow ones.
 	 */
 	.graph {
 		--rail: -1.1rem;
 		--graph-pad: 1.6rem;
 		--dot: 12px;
 		--heading-mid: 1.1rem; /* vertical middle of an h2's first line */
+		--band-pad: var(--space-16); /* the Outside of work band's top and bottom padding */
 		padding-left: var(--graph-pad);
 	}
 
@@ -224,8 +261,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 
 	/*
 	 * About: bio on the left, Mount Shasta framed on the right (from 900px). Narrower: one
-	 * column, the photo last. The h2 spans both columns so its rail node stays beside it. The
-	 * photo drifts gently inside its frame on the section's --section view timeline.
+	 * column, the photo last. The h2 spans both columns so its rail node stays beside it.
 	 */
 	.about {
 		display: grid;
@@ -278,30 +314,6 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		height: 100%;
 		object-fit: cover;
 		object-position: 50% 40%;
-		transform: scale(1.12);
-	}
-
-	@media (prefers-reduced-motion: no-preference) {
-		@supports (animation-timeline: view()) {
-			/* Longhands only; see the note in Interests.astro. */
-			.shasta img {
-				animation-name: parallax;
-				animation-timing-function: linear;
-				animation-fill-mode: both;
-				animation-timeline: --section;
-				animation-range: cover 0% cover 100%;
-			}
-		}
-	}
-
-	/* ±5% stays inside the 6% of overflow that scale(1.12) leaves on each edge. */
-	@keyframes parallax {
-		from {
-			transform: translateY(-5%) scale(1.12);
-		}
-		to {
-			transform: translateY(5%) scale(1.12);
-		}
 	}
 
 	.node::before {
@@ -387,7 +399,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 
 		/* Every later section: node pops, then its segment draws, as it scrolls in. */
 		@supports (animation-timeline: view()) {
-			/* Longhands only; see the note in Interests.astro. */
+			/* Longhands only; see the note on .reveal in global.css. */
 			.node:not(.hero)::before,
 			.node:not(.hero)::after {
 				animation-timing-function: linear;
@@ -576,6 +588,101 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		.tiles {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
+	}
+
+	/*
+	 * Outside of work: a full-width band, dark in both themes (.on-dark), over Mount Shasta.
+	 * The photo is blurred and sits under a dark veil (darkest on the left, behind the heading
+	 * and pills) so text keeps at least 4.5:1. It is positioned behind the content, so the
+	 * band's height comes from the content alone and nothing shifts when the photo loads.
+	 * The band's top padding moves this section's rail node down, and the segment coming
+	 * from the previous section runs on through it.
+	 */
+	.interests {
+		isolation: isolate;
+		padding-block: var(--band-pad);
+	}
+
+	.interests.node {
+		--node-top: calc(var(--band-pad) + var(--heading-mid) - var(--dot) / 2);
+	}
+
+	.graph > .node:has(+ .interests)::after {
+		bottom: calc(
+			-1 * (var(--space-12) + var(--band-pad) + var(--heading-mid) - var(--dot) / 2 - 4px)
+		);
+	}
+
+	.band-bg {
+		position: absolute;
+		z-index: -1;
+		inset-block: 0;
+		/* Full window width, centred on the page (not the section, which the graph's left
+		   padding shifts right). */
+		left: calc(50% - var(--graph-pad, 0px) / 2);
+		width: 100vw;
+		transform: translateX(-50%);
+		overflow: hidden;
+		background: var(--dark-bg);
+	}
+
+	.band-bg img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 50% 35%;
+		filter: blur(3px) saturate(1.1);
+		/* Hide the blur's soft edges. */
+		transform: scale(1.06);
+	}
+
+	.band-bg::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(
+				to right,
+				rgb(18 18 20 / 0.9),
+				rgb(18 18 20 / 0.74) 55%,
+				rgb(18 18 20 / 0.52)
+			),
+			linear-gradient(to bottom, rgb(18 18 20 / 0.35), transparent 30% 70%, rgb(18 18 20 / 0.35));
+	}
+
+	/* Text column stays at the top, so the heading stays beside its rail node however tall
+	   the candid photo is; the photo centres itself against the text. */
+	.band {
+		display: grid;
+		align-items: start;
+		gap: var(--space-8);
+	}
+
+	.band h2 {
+		margin-bottom: var(--space-6);
+	}
+
+	@media (min-width: 48rem) {
+		.band.with-candid {
+			grid-template-columns: minmax(0, 1fr) 13rem;
+		}
+
+		.band .candid {
+			align-self: center;
+		}
+	}
+
+	/* The candid photo, when there is one: a small tilted print. */
+	.candid {
+		width: 100%;
+		max-width: 13rem;
+		height: auto;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border: 1px solid rgb(255 255 255 / 0.18);
+		border-radius: calc(var(--radius) * 2);
+		box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.8);
+		rotate: 2deg;
 	}
 
 	/* Contact: a short line and the email on the left, the link buttons on the right. */

@@ -1,17 +1,21 @@
 ---
 /**
- * "Outside of work": each interest hangs off the home page's graph rail on its own branch.
- * While scrolling, the junction dot appears, the branch grows out from the rail, and the
- * icon and label slide in along it. Expects `--rail` (the rail's x offset, relative to the
- * content's left edge) from an ancestor; see `.graph` in src/pages/index.astro.
+ * "Outside of work": the interests as a compact row of pills (2×2 on phones), all visible at
+ * once. Sits in the home page's dark photo band, so it uses the band's (dark) colours.
  *
- * All motion is CSS and switches off under prefers-reduced-motion; browsers without scroll
- * timelines show the finished branches.
+ * An interest with `href` is a link: the whole pill is clickable, opens in the same tab,
+ * gets a visible focus ring, and shows a small ↗ when it leads to another site. Without
+ * `href` it is a plain pill.
+ *
+ * The icons have small CSS animations (blinking cursor, pulsing agent nodes, lines drawn on
+ * hover), all off under prefers-reduced-motion.
  */
 interface Interest {
 	label: string;
 	/** Inline SVG markup (24×24 viewBox, stroke = currentColor). */
 	icon: string;
+	/** Where the pill links to, e.g. a travel site for Hiking. Omit for a plain pill. */
+	href?: string;
 }
 
 const SVG = (body: string) =>
@@ -54,185 +58,141 @@ const interests: Interest[] = [
 		),
 	},
 ];
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
 ---
 
-<ul class="tree">
+<ul class="pills">
 	{
-		interests.map(({ label, icon }) => (
-			<li class="branch">
-				<span class="pill" data-spotlight>
-					<span class="icon" set:html={icon} />
-					<span class="label">{label}</span>
-				</span>
-			</li>
-		))
+		interests.map(({ label, icon, href }) => {
+			const Tag = href ? 'a' : 'span';
+			return (
+				<li>
+					<Tag class="pill" href={href} data-spotlight>
+						<span class="icon" set:html={icon} />
+						<span class="label">{label}</span>
+						{href && isExternal(href) && (
+							<>
+								<span class="ext" aria-hidden="true">
+									↗
+								</span>
+								<span class="visually-hidden"> (another site)</span>
+							</>
+						)}
+					</Tag>
+				</li>
+			);
+		})
 	}
 </ul>
 
 <style>
-	.tree {
+	/* Phones: a 2×2 grid. Wider: one row that wraps if it must. */
+	.pills {
 		display: grid;
-		gap: var(--space-4);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--space-3);
 		padding: 0;
 		list-style: none;
 	}
 
-	/* The list item holds the branch line and junction dot; the pill inside it slides in. */
-	.branch {
-		position: relative;
-		width: fit-content;
-		view-timeline: --branch block;
+	@media (min-width: 40rem) {
+		.pills {
+			display: flex;
+			flex-wrap: wrap;
+		}
 	}
 
 	.pill {
 		display: flex;
 		align-items: center;
 		gap: var(--space-3);
-		min-width: 13rem;
+		height: 100%;
 		padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
-		background-color: var(--color-surface);
-		border: 1px solid var(--color-border);
+		/* background-color, not the shorthand, so the cursor spotlight can paint over it. */
+		background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+		backdrop-filter: blur(8px);
+		border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
 		border-radius: 999px;
+		color: var(--color-text);
+		text-decoration: none;
 		transition:
 			border-color 0.2s ease,
 			box-shadow 0.2s ease;
 	}
 
-	/* The branch: from the rail to the item. */
-	.branch::before {
-		content: '';
-		position: absolute;
-		top: calc(50% - 1px);
-		left: var(--rail);
-		width: calc(-1 * var(--rail));
-		height: 2px;
-		background: color-mix(in srgb, var(--color-accent) 60%, transparent);
-		transform-origin: left;
+	/* Linked pills: accent border and glow on hover, and a ring on keyboard focus. */
+	a.pill:hover {
+		color: var(--color-text);
+		border-color: color-mix(in srgb, var(--color-accent) 70%, transparent);
+		box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--color-accent) 70%, transparent);
 	}
 
-	/* The junction dot on the rail. */
-	.branch::after {
-		content: '';
-		position: absolute;
-		top: calc(50% - 4px);
-		left: calc(var(--rail) - 4px);
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--color-accent);
-		box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent);
-	}
-
-	.branch:hover .pill {
-		border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
-		box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	a.pill:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+		border-radius: 999px;
 	}
 
 	.icon {
 		display: grid;
 		place-items: center;
 		flex: none;
-		width: 2.75rem;
-		height: 2.75rem;
+		width: 2.25rem;
+		height: 2.25rem;
 		border-radius: 50%;
 		color: var(--color-accent);
-		background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+		background: color-mix(in srgb, var(--color-accent) 16%, transparent);
 	}
 
 	.icon :global(svg) {
-		width: 1.75rem;
-		height: 1.75rem;
+		width: 1.4rem;
+		height: 1.4rem;
 	}
 
 	.label {
 		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.ext {
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
 	}
 
 	/* Static state of the hover-drawn lines. */
-	.branch :global(.line) {
+	.pill :global(.line) {
 		stroke-dasharray: 1;
 		stroke-dashoffset: 0;
 	}
 
-	.branch :global(.trail) {
+	.pill :global(.trail) {
 		stroke-width: 1.25;
 		stroke-dasharray: 0.08 0.06;
 		opacity: 0.8;
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
-		/* Scroll: junction dot, then branch, then icon and label slide in along it. */
-		@supports (animation-timeline: view()) {
-			/* Longhands only: an `animation` shorthand next to `animation-timeline` gets merged by
-			   the CSS minifier into one invalid declaration, which browsers then drop. */
-			.branch::after,
-			.branch::before,
-			.pill {
-				animation-timing-function: linear;
-				animation-fill-mode: both;
-				animation-timeline: --branch;
-			}
-
-			/* Ranges in px from the moment the item enters the viewport (not % of the viewport),
-			   so each animation finishes ~200px above the bottom edge on any screen height, and the
-			   last item, near the end of the page, can always scroll far enough to complete. */
-			.branch::after {
-				animation-name: pop;
-				animation-range: entry 0% cover 60px;
-			}
-
-			.branch::before {
-				animation-name: grow-x;
-				animation-range: cover 40px cover 130px;
-			}
-
-			.pill {
-				animation-name: slide-in;
-				animation-range: cover 90px cover 200px;
-			}
-		}
-
-		/* Icons: blinking cursor, pulsing agent nodes, lines drawn on hover. */
-		.branch :global(.cursor) {
+		.pill :global(.cursor) {
 			animation: blink 1.1s steps(1) infinite;
 		}
 
-		.branch :global(.agent-node) {
+		.pill :global(.agent-node) {
 			transform-box: fill-box;
 			transform-origin: center;
 			animation: pulse 2.4s ease-in-out infinite;
 		}
-		.branch :global(.an1) { animation-delay: 0.3s; }
-		.branch :global(.an2) { animation-delay: 0.6s; }
-		.branch :global(.an3) { animation-delay: 0.9s; }
-		.branch :global(.an4) { animation-delay: 1.2s; }
+		.pill :global(.an1) { animation-delay: 0.3s; }
+		.pill :global(.an2) { animation-delay: 0.6s; }
+		.pill :global(.an3) { animation-delay: 0.9s; }
+		.pill :global(.an4) { animation-delay: 1.2s; }
 
-		.branch:hover :global(.line) {
+		.pill:hover :global(.line) {
 			animation: draw 0.9s ease-out;
 		}
 
-		.branch:hover :global(.trail) {
+		.pill:hover :global(.trail) {
 			animation: march 1.2s linear infinite;
-		}
-	}
-
-	@keyframes pop {
-		from {
-			opacity: 0;
-			transform: scale(0);
-		}
-	}
-
-	@keyframes grow-x {
-		from {
-			transform: scaleX(0);
-		}
-	}
-
-	@keyframes slide-in {
-		from {
-			opacity: 0;
-			transform: translateX(-16px);
 		}
 	}
 
