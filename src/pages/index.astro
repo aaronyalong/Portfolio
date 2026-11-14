@@ -567,6 +567,8 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	 */
 	.interests {
 		isolation: isolate;
+		/* Tall enough to show the whole mountain under the heading and pills. */
+		min-height: clamp(28rem, 50vw, 52rem);
 		padding-block: var(--band-pad);
 	}
 
@@ -593,28 +595,24 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		background: var(--dark-bg);
 	}
 
+	/* The whole mountain, sharp. The heading and pills sit in the dark sky above it. */
 	.band-bg img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: 50% 35%;
-		filter: blur(3px) saturate(1.1);
-		/* Hide the blur's soft edges. */
-		transform: scale(1.06);
+		object-position: 50% 25%;
 	}
 
+	/* Shade only where the text is (top left) and a fade at the bottom; the mountain stays
+	   clear. */
 	.band-bg::after {
 		content: '';
 		position: absolute;
 		inset: 0;
 		background:
-			linear-gradient(
-				to right,
-				rgb(18 18 20 / 0.9),
-				rgb(18 18 20 / 0.74) 55%,
-				rgb(18 18 20 / 0.52)
-			),
-			linear-gradient(to bottom, rgb(18 18 20 / 0.35), transparent 30% 70%, rgb(18 18 20 / 0.35));
+			linear-gradient(to right, rgb(18 18 20 / 0.7), rgb(18 18 20 / 0.25) 45%, transparent 70%),
+			linear-gradient(to bottom, rgb(18 18 20 / 0.5), transparent 35%),
+			linear-gradient(to top, rgb(18 18 20 / 0.6), transparent 25%);
 	}
 
 	/* Text column stays at the top, so the heading stays beside its rail node however tall
