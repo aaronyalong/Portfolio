@@ -49,6 +49,9 @@ const projects = defineCollection({
 	}),
 });
 
+/** Shown next to the dates. One value, or a list such as [contract, part-time]. */
+const employmentType = z.enum(['full-time', 'part-time', 'contract', 'internship']);
+
 /**
  * One timeline entry: a role (experience) or a degree (education). Quote dates in YAML
  * ("2024"), or a bare year parses as a number and fails validation.
@@ -62,8 +65,11 @@ const timelineEntry = z.object({
 	start: yearMonth.optional(),
 	/** "present" marks a current role. A degree whose end is after the build date is "Expected". */
 	end: z.union([yearMonth, z.literal('present')]).optional(),
-	/** Shown next to the dates; omit for full-time. */
-	type: z.enum(['full-time', 'part-time', 'contract', 'internship']).optional(),
+	/** Shown next to the dates; omit for full-time. A list shows as "Contract · Part-time". */
+	type: z
+		.union([employmentType, z.array(employmentType).min(1)])
+		.transform((value) => (Array.isArray(value) ? value : [value]))
+		.optional(),
 	/** One line. Can be combined with bullets. */
 	summary: z.string().optional(),
 	bullets: z.array(z.string()).max(4).default([]),

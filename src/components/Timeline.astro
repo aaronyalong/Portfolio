@@ -45,7 +45,7 @@ const entries = await Promise.all(
 			state: item.id === leadId ? 'lead' : current ? 'current' : 'past',
 			// A degree in progress already reads "Expected <date>", so it needs no tag.
 			showCurrentTag: current && !isDegree,
-			typeLabel: type ? TYPE_LABELS[type] : undefined,
+			typeLabel: type?.map((t) => TYPE_LABELS[t]).join(' · '),
 			start,
 			end,
 			// Degrees may give only the end date; a role with no start date is a TODO.

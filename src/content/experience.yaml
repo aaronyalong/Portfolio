@@ -5,13 +5,21 @@
 - id: intuitive-machines
   title: Junior Software Engineer
   org: Intuitive Machines
-  type: part-time
-  start: "2026-03"
+  type: [contract, part-time]
+  start: "2026-04"
   end: present
   summary: >-
     Builds an internal agentic AI desktop application: CAD automation, manufacturing-data
     integration, document tooling, performance work.
   stack: [Scala, LangChain4j, Claude]
+
+- id: lanteris
+  title: Software Engineer Intern
+  org: Lanteris Space Systems
+  type: internship
+  start: "2026-03"
+  end: "2026-04"
+  summary: Lanteris was acquired by Intuitive Machines, and the role continued there.
 
 - id: handshake-ai
   title: AI Trainer
@@ -20,6 +28,13 @@
   start: "2025-01"
   end: present
   summary: LLM output evaluation.
+
+- id: san-diego-fc
+  title: Retail Associate
+  org: San Diego FC
+  start: "2025-01"
+  end: "2025-12"
+  summary: Sales Associate on the Retail Team (Stadium & Store).
 
 - id: luminexa
   title: Junior Software Developer
