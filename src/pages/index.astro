@@ -27,26 +27,26 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	<div class="graph">
 	<section class="hero node" data-spotlight=".hero-bg">
 		<div class="hero-bg" aria-hidden="true"></div>
-		<div class="identity rise">
-			<img
-				class="avatar"
-				src="/images/headshot.webp"
-				alt="Headshot of Aaron Yalong"
-				width="256"
-				height="256"
-				fetchpriority="high"
-			/>
-			<h1>Aaron Yalong</h1>
-		</div>
-		<p class="pitch rise" style="--rise-step: 1">
-			Software engineer focused on LLM application engineering: agentic systems, RAG pipelines,
-			MCP servers.
-		</p>
-		<ul class="now rise" style="--rise-step: 2" aria-label="Currently">
-			{now.map((item) => <li>{item}</li>)}
-		</ul>
-		<div class="hero-links rise" style="--rise-step: 3">
-			<HeroLinks />
+		<img
+			class="portrait rise"
+			src="/images/headshot.webp"
+			alt="Headshot of Aaron Yalong"
+			width="256"
+			height="256"
+			fetchpriority="high"
+		/>
+		<div class="hero-text">
+			<h1 class="rise">Aaron Yalong</h1>
+			<p class="pitch rise" style="--rise-step: 1">
+				Software engineer focused on LLM application engineering: agentic systems, RAG
+				pipelines, MCP servers.
+			</p>
+			<ul class="now rise" style="--rise-step: 2" aria-label="Currently">
+				{now.map((item) => <li>{item}</li>)}
+			</ul>
+			<div class="hero-links rise" style="--rise-step: 3">
+				<HeroLinks />
+			</div>
 		</div>
 	</section>
 
@@ -110,10 +110,18 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 
 	<section id="contact" aria-labelledby="contact-heading" class="node">
 		<h2 id="contact-heading">Contact</h2>
-		<p class="email">
-			<a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-		</p>
-		<HeroLinks />
+		<div class="contact-panel">
+			<div>
+				<p class="contact-line">
+					Open to conversations about LLM applications, agentic systems, and evaluation. The
+					fastest way to reach me is email.
+				</p>
+				<p class="email">
+					<a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+				</p>
+			</div>
+			<HeroLinks />
+		</div>
 	</section>
 	</div>
 </BaseLayout>
@@ -162,35 +170,62 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		view-timeline: --section block;
 	}
 
-	/* The hero's node sits beside the avatar + name row (the avatar is the taller of the two). */
+	/*
+	 * Hero: one portrait image, placed by grid areas. Narrow: portrait above the text, and the
+	 * rail node beside the portrait. From 900px: text left, larger portrait right, and the node
+	 * beside the name's first line (the text column is top-aligned, so that line's position is
+	 * known: top padding + half the h1's line box).
+	 */
+	.hero {
+		display: grid;
+		grid-template-areas: 'portrait' 'text';
+		gap: var(--space-6);
+	}
+
 	.hero.node {
-		--avatar: 4rem;
-		--node-top: calc(var(--space-8) + var(--avatar) / 2 - var(--dot) / 2);
+		--portrait: 5.5rem;
+		--node-top: calc(var(--space-8) + var(--portrait) / 2 - var(--dot) / 2);
 	}
 
-	@media (min-width: 40rem) {
-		.hero.node {
-			--avatar: 5.5rem;
-		}
+	.hero-text {
+		grid-area: text;
+		min-width: 0;
 	}
 
-	.identity {
-		display: flex;
-		align-items: center;
-		gap: var(--space-4);
-	}
-
-	/* Small on purpose: the source photo is soft. */
-	.avatar {
-		flex: none;
-		width: var(--avatar);
-		height: var(--avatar);
+	.portrait {
+		grid-area: portrait;
+		width: var(--portrait);
+		height: var(--portrait);
 		border-radius: 50%;
 		object-fit: cover;
 		box-shadow:
 			0 0 0 3px var(--color-bg),
 			0 0 0 5px color-mix(in srgb, var(--color-accent) 65%, transparent),
 			0 0 28px color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+
+	@media (min-width: 56.25rem) {
+		.hero {
+			grid-template-columns: minmax(0, 1fr) var(--portrait);
+			grid-template-areas: 'text portrait';
+			align-items: start;
+			column-gap: var(--space-12);
+		}
+
+		.hero.node {
+			/* 240px for now: the source is 256px. Raise to ~18rem with the 800px headshot. */
+			--portrait: 15rem;
+			--h1-line: calc(3.5rem * 1.25);
+			--node-top: calc(var(--space-8) + var(--h1-line) / 2 - var(--dot) / 2);
+		}
+
+		.portrait {
+			align-self: center;
+			box-shadow:
+				0 0 0 4px var(--color-bg),
+				0 0 0 6px color-mix(in srgb, var(--color-accent) 65%, transparent),
+				0 0 48px color-mix(in srgb, var(--color-accent) 40%, transparent);
+		}
 	}
 
 	/* About: the bio, then "Outside of work" over Mount Shasta as a faded full-width backdrop
@@ -492,9 +527,33 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		list-style: none;
 	}
 
-	/* Contact */
-	.email {
-		margin-bottom: var(--space-4);
+	/* Contact: a short line and the email on the left, the link buttons on the right. */
+	.contact-panel {
+		display: grid;
+		align-items: center;
+		gap: var(--space-6);
+		/* Tight on phones so Resume and the three icon buttons fit on one row. */
+		padding: var(--space-6) var(--space-4);
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: calc(var(--radius) * 2);
+	}
+
+	@media (min-width: 48rem) {
+		.contact-panel {
+			grid-template-columns: minmax(0, 1fr) auto;
+			column-gap: var(--space-12);
+			padding: var(--space-8);
+		}
+	}
+
+	.contact-line {
+		max-width: var(--prose-width);
 		font-size: var(--text-lg);
+	}
+
+	.email {
+		margin-top: var(--space-2);
+		font-weight: 600;
 	}
 </style>
