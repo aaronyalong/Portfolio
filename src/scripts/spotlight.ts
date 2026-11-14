@@ -4,7 +4,7 @@
  *
  * - `data-spotlight` (no value): the element paints its own glow (see global.css).
  * - `data-spotlight=".selector"`: the pointer is tracked over the element, but the position
- *   is measured against, and written to, that inner layer (the home hero's full-width
+ *   is measured against, and written to, that inner layer (the home intro's full-width
  *   background, which is larger than the hero itself).
  *
  * One shared listener, at most one update per frame. Skipped on touch screens, where there
