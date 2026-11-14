@@ -44,20 +44,16 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		/>
 		<div class="hero-text">
 			<h1 class="rise">Aaron Yalong</h1>
-			<p class="pitch rise" style="--rise-step: 1">
-				Software engineer building LLM applications: agentic systems, RAG pipelines, and MCP
-				servers.
-			</p>
-			<ul class="now rise" style="--rise-step: 2" aria-label="Currently">
+			<ul class="now rise" style="--rise-step: 1" aria-label="Currently">
 				{now.map((item) => <li>{item}</li>)}
 			</ul>
-			<div class="hero-links rise" style="--rise-step: 3">
+			<div class="hero-links rise" style="--rise-step: 2">
 				<HeroLinks />
 			</div>
 		</div>
 	</section>
 
-	<section id="about" aria-labelledby="about-heading" class="node rise about" style="--rise-step: 4">
+	<section id="about" aria-labelledby="about-heading" class="node rise about" style="--rise-step: 3">
 		<h2 id="about-heading">About</h2>
 		<p class="bio">
 			I'm a software engineer at Intuitive Machines, where I build an agentic AI desktop
@@ -110,9 +106,11 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 			/>
 		</div>
 		<div class:list={['band', 'on-dark', { 'with-candid': candid }]}>
-			<div>
+			<div class="band-text">
 				<h2 id="interests-heading">Outside of work</h2>
-				<Interests />
+				<div class="pill-row">
+					<Interests />
+				</div>
 			</div>
 			{
 				candid && (
@@ -151,18 +149,11 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	/* Sections (and the Experience + Education wrapper) are spaced evenly; the rail segments
 	   below rely on this gap. */
 	.graph > * + * {
-		margin-top: var(--space-12);
+		margin-top: var(--section-gap);
 	}
 
 	h2 {
 		margin-bottom: var(--space-4);
-	}
-
-	.pitch {
-		max-width: var(--prose-width);
-		margin-top: var(--space-3);
-		font-size: var(--text-lg);
-		color: var(--color-text);
 	}
 
 	/*
@@ -176,6 +167,8 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		--dot: 12px;
 		--heading-mid: 1.1rem; /* vertical middle of an h2's first line */
 		--band-pad: var(--space-16); /* the Outside of work band's top and bottom padding */
+		/* Space between sections. The rail segments below are computed from it. */
+		--section-gap: clamp(4.5rem, 9vw, 7rem);
 		padding-left: var(--graph-pad);
 	}
 
@@ -254,7 +247,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 
 	/* About: the bio, at a readable measure, on the intro's shared backdrop. */
 	.hero + .about {
-		margin-top: var(--space-12);
+		margin-top: var(--section-gap);
 	}
 
 	.bio {
@@ -282,7 +275,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 		content: '';
 		position: absolute;
 		top: calc(var(--node-top) + var(--dot) + 4px);
-		bottom: calc(-1 * (var(--space-12) + var(--heading-mid) - var(--dot) / 2 - 4px));
+		bottom: calc(-1 * (var(--section-gap) + var(--heading-mid) - var(--dot) / 2 - 4px));
 		left: calc(var(--rail) - 1px);
 		width: 2px;
 		border-radius: 2px;
@@ -308,7 +301,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	 */
 	.career {
 		display: grid;
-		row-gap: var(--space-12);
+		row-gap: var(--section-gap);
 	}
 
 	.career::before,
@@ -420,7 +413,8 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	}
 
 	.hero {
-		padding-block: var(--space-8) var(--space-12);
+		/* Bottom kept small: the section gap does the spacing to About. */
+		padding-block: var(--space-8) var(--space-4);
 	}
 
 	.hero h1 {
@@ -558,16 +552,18 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 	}
 
 	/*
-	 * Outside of work: a full-width band, dark in both themes (.on-dark), over Mount Shasta.
-	 * The photo is blurred and sits under a dark veil (darkest on the left, behind the heading
-	 * and pills) so text keeps at least 4.5:1. It is positioned behind the content, so the
-	 * band's height comes from the content alone and nothing shifts when the photo loads.
-	 * The band's top padding moves this section's rail node down, and the segment coming
-	 * from the previous section runs on through it.
+	 * Outside of work: a full-width band, dark in both themes (.on-dark), over the whole of
+	 * Mount Shasta. The heading sits in the sky at the top; the pills sit at the bottom, along
+	 * the mountain's foot. The photo is positioned behind the content and the band has a
+	 * fixed minimum height, so nothing shifts when the photo loads. The band's top padding
+	 * moves this section's rail node down, and the segment coming from the previous section
+	 * runs on through it.
 	 */
 	.interests {
 		isolation: isolate;
-		/* Tall enough to show the whole mountain under the heading and pills. */
+		display: flex;
+		flex-direction: column;
+		/* Tall enough to show the whole mountain between the heading and the pills. */
 		min-height: clamp(28rem, 50vw, 52rem);
 		padding-block: var(--band-pad);
 	}
@@ -578,7 +574,7 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 
 	.graph > .node:has(+ .interests)::after {
 		bottom: calc(
-			-1 * (var(--space-12) + var(--band-pad) + var(--heading-mid) - var(--dot) / 2 - 4px)
+			-1 * (var(--section-gap) + var(--band-pad) + var(--heading-mid) - var(--dot) / 2 - 4px)
 		);
 	}
 
@@ -615,21 +611,34 @@ const now = [primaryCurrent(jobs), primaryCurrent(degrees)]
 			linear-gradient(to top, rgb(18 18 20 / 0.6), transparent 25%);
 	}
 
-	/* Text column stays at the top, so the heading stays beside its rail node however tall
-	   the candid photo is; the photo centres itself against the text. */
+	/* The band fills the section's height. Its text column runs top to bottom: heading at the
+	   top (beside its rail node), pills pushed to the bottom. A candid photo, when there is
+	   one, centres itself beside the text (below it on phones). */
 	.band {
+		flex: 1;
 		display: grid;
-		align-items: start;
+		grid-template-rows: 1fr;
 		gap: var(--space-8);
 	}
 
-	.band h2 {
-		margin-bottom: var(--space-6);
+	.band.with-candid {
+		grid-template-rows: 1fr auto;
+	}
+
+	.band-text {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
+	}
+
+	.pill-row {
+		margin-top: auto;
 	}
 
 	@media (min-width: 48rem) {
 		.band.with-candid {
 			grid-template-columns: minmax(0, 1fr) 13rem;
+			grid-template-rows: 1fr;
 		}
 
 		.band .candid {
